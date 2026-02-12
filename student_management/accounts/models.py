@@ -29,7 +29,7 @@ class Student(AbstractUser):
 
     # -- Personal Details --
     profile_picture = models.ImageField(upload_to='students/profile_pics/', blank=True, null=True)
-    phone = models.CharField(max_length=15, blank=True)
+    phone = models.CharField(max_length=12, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
 
     GENDER_CHOICES = [

@@ -4,7 +4,17 @@ from .models import Student
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'password'}))
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'confirm password'}))
-    date_of_birth = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    # date_of_birth = forms.DateField(
+    #     input_formats=['%Y-%m-%d', '%d-%m-%Y', '%d/%m/%Y'],
+    #     widget=forms.DateInput(attrs={'type': 'date'})
+    #     )
+    date_of_birth = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'type': 'text',
+            'class': 'flatpickr',
+            'placeholder': 'Select your dob',
+        })
+    )
 
     class Meta:
         model = Student

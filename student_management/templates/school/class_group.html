@@ -1,0 +1,26 @@
+{% extends 'school/base.html' %}
+
+{% block header_title %}Class 10-A Teachers{% endblock %}
+
+{% block content %}
+<div class="glass-card p-6">
+    <div class="space-y-4">
+         <div class="flex items-center gap-4 p-4 border border-slate-50 rounded-2xl hover:bg-slate-50 transition">
+            <img src="https://i.pravatar.cc/150?img=68" class="w-12 h-12 rounded-full">
+            <div>
+                <h4 class="font-bold text-slate-900">Mr. John Anderson</h4>
+                <p class="text-xs text-slate-500">Mathematics</p>
+            </div>
+            <button class="ml-auto text-brand text-sm font-medium">Message</button>
+        </div>
+         <div class="flex items-center gap-4 p-4 border border-slate-50 rounded-2xl hover:bg-slate-50 transition">
+            <img src="https://i.pravatar.cc/150?img=44" class="w-12 h-12 rounded-full">
+            <div>
+                <h4 class="font-bold text-slate-900">Mrs. Sarah Smith</h4>
+                <p class="text-xs text-slate-500">Physics</p>
+            </div>
+             <button class="ml-auto text-brand text-sm font-medium">Message</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

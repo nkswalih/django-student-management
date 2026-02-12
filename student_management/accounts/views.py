@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -33,7 +33,7 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f"Welcome back, {user.first_name}!")
-                return redirect('dashboard')
+                return redirect('student_dashboard')
             else:
                 messages.error(request, "Invalid email or password.")
         else:
@@ -42,3 +42,7 @@ def user_login(request):
         form = AuthenticationForm()
 
     return render(request, 'accounts/login.html', {'form': form})
+
+def user_logout(request):
+    auth_logout(request)
+    return redirect("login")

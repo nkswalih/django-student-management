@@ -1,0 +1,34 @@
+{% extends 'school/base.html' %}
+
+{% block header_title %}Available Courses{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Course 1 -->
+    <div class="glass-card p-4 hover:shadow-lg transition">
+        <div class="h-32 bg-blue-100 rounded-xl mb-4 flex items-center justify-center text-blue-500">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+        </div>
+        <div class="flex justify-between items-start mb-2">
+            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded">Coding</span>
+            <span class="font-bold text-slate-800">$49</span>
+        </div>
+        <h3 class="font-bold text-slate-900">Advanced Python</h3>
+        <p class="text-xs text-slate-500 mt-1 mb-4">Master backend development with Django.</p>
+        <button class="w-full bg-dark text-white py-2 rounded-xl text-sm font-medium hover:bg-slate-800">Buy Now</button>
+    </div>
+    <!-- Course 2 -->
+    <div class="glass-card p-4 hover:shadow-lg transition">
+        <div class="h-32 bg-purple-100 rounded-xl mb-4 flex items-center justify-center text-purple-500">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+        </div>
+        <div class="flex justify-between items-start mb-2">
+            <span class="bg-purple-50 text-purple-600 text-[10px] font-bold px-2 py-1 rounded">Design</span>
+            <span class="font-bold text-slate-800">$35</span>
+        </div>
+        <h3 class="font-bold text-slate-900">UI/UX Fundamentals</h3>
+        <p class="text-xs text-slate-500 mt-1 mb-4">Learn to design beautiful interfaces.</p>
+        <button class="w-full bg-dark text-white py-2 rounded-xl text-sm font-medium hover:bg-slate-800">Buy Now</button>
+    </div>
+</div>
+{% endblock %}
