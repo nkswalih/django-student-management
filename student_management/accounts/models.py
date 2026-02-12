@@ -1,17 +1,37 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+
+
+class StudentManager(BaseUserManager):
+    """Custom manager — fixes createsuperuser crash."""
+
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('Email address is required')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        return self.create_user(email, password, **extra_fields)
+
 
 class Student(AbstractUser):
     """
     Custom User model for Students.
-    Inherits from AbstractUser to handle authentication (username, password, first_name, last_name, email).
+    Inherits from AbstractUser to handle authentication.
     """
-    
+
     # -- Personal Details --
     profile_picture = models.ImageField(upload_to='students/profile_pics/', blank=True, null=True)
     phone = models.CharField(max_length=15, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    
+
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
@@ -20,33 +40,30 @@ class Student(AbstractUser):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='O')
 
     # -- Academic Details --
-    reg_number = models.CharField(max_length=20, unique=True, help_text="Unique Student Registration ID")
-    department = models.CharField(max_length=100)
-    course = models.CharField(max_length=100)
+    reg_number = models.CharField(max_length=20, unique=True, blank=True, null=True, help_text="Unique Student Registration ID")
+    department = models.CharField(max_length=100, blank=True)
+    course = models.CharField(max_length=100, blank=True)
     year_of_admission = models.PositiveIntegerField(default=2026)
 
-    # Make username optional since we're using email for login
+    # Username is auto-generated
     username = models.CharField(max_length=150, unique=True, blank=True, null=True)
     email = models.EmailField(unique=True)
 
-    # Use email for login
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'reg_number']
+    REQUIRED_FIELDS = ['first_name', 'last_name']  # reg_number removed — not needed for superuser
+
+    # Attach custom manager
+    objects = StudentManager()
 
     def save(self, *args, **kwargs):
-        # Auto-generate username from email if not provided
         if not self.username:
             base_username = self.email.split('@')[0]
             username = base_username
             counter = 1
-            
-            # Handle duplicate usernames by appending a number
             while Student.objects.filter(username=username).exclude(pk=self.pk).exists():
                 username = f"{base_username}{counter}"
                 counter += 1
-            
             self.username = username
-        
         super().save(*args, **kwargs)
 
     def __str__(self):

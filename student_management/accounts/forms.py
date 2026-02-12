@@ -13,7 +13,33 @@ class RegisterForm(forms.ModelForm):
             'date_of_birth', 'gender',
             'reg_number', 'department', 'course', 'year_of_admission'
         ]
+
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Others'),
+    ]
+    
+    DEPT_CHOICES = [
+        ('CSE', 'Computer Science'),
+        ('ECE', 'Electronics & Comm'),
+        ('MECH', 'Mechanical Eng'),
+        ('CIVIL', 'Civil Engineering'),
+        ('BBA', 'Business Admin'),
+    ]
+
+    COURSE_CHOICES = [
+        ('BTECH', 'B.Tech'),
+        ('MTECH', 'M.Tech'),
+        ('BCA', 'BCA'),
+        ('MCA', 'MCA'),
+        ('MBA', 'MBA'),
+    ]
         
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.Select)
+    department = forms.ChoiceField(choices=DEPT_CHOICES, widget=forms.Select)
+    course = forms.ChoiceField(choices=COURSE_CHOICES, widget=forms.Select)
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")

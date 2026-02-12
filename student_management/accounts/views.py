@@ -4,43 +4,40 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import RegisterForm
 
+
 def registration(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            
-            # Set password (hashed)
             user.set_password(form.cleaned_data['password'])
-            
-            # Username will be auto-generated in the model's save() method
             user.save()
-            
             messages.success(request, "Registration successful! You can now login.")
-            return redirect('login')  # Change 'login' to your actual login URL name
+            return redirect('login')
         else:
-            # Show form errors
             messages.error(request, "Please correct the errors below.")
     else:
         form = RegisterForm()
 
     return render(request, 'accounts/register.html', {'form': form})
 
+
 def user_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
+            # ✅ Use email instead of username — matches USERNAME_FIELD = 'email'
+            email = form.cleaned_data.get('username')  # AuthenticationForm always uses 'username' key
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
+            user = authenticate(request, username=email, password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request, f"Welcome back, {username}!")
-                return redirect('dashboard') # Change this to your desired redirect URL
+                messages.success(request, f"Welcome back, {user.first_name}!")
+                return redirect('dashboard')
             else:
-                messages.error(request, "Invalid username or password.")
+                messages.error(request, "Invalid email or password.")
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Invalid email or password.")
     else:
         form = AuthenticationForm()
 
