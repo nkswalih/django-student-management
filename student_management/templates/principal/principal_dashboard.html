@@ -1,0 +1,74 @@
+{% extends 'principal/base_principal.html' %}
+
+{% block header_title %}Principal Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div>
+            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Total Students</p><h3 class="text-2xl font-bold text-slate-800">1,240</h3></div>
+        </div>
+        <div class="glass-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
+            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Total Depts</p><h3 class="text-2xl font-bold text-slate-800">5</h3></div>
+        </div>
+        <div class="glass-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Pending Req</p><h3 class="text-2xl font-bold text-slate-800">15</h3></div>
+        </div>
+        <div class="glass-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Active Courses</p><h3 class="text-2xl font-bold text-slate-800">24</h3></div>
+        </div>
+    </div>
+
+    <!-- Chart & Overview -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 glass-card p-8">
+            <h3 class="text-lg font-bold text-slate-900 mb-6">Department Overview</h3>
+            <div class="relative h-64 w-full">
+                <canvas id="deptChart"></canvas>
+            </div>
+        </div>
+
+        <div class="glass-card p-6 bg-gradient-to-br from-[#807ee9] to-[#5b58eb] text-white">
+            <h3 class="text-lg font-bold">Quick Actions</h3>
+            <p class="text-indigo-100 text-sm mb-6">Manage your portal efficiently.</p>
+            <div class="space-y-3">
+                <a href="{% url 'manage_courses' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">Add New Course +</a>
+                <a href="{% url 'manage_users' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">Verify Students</a>
+                <a href="{% url 'course_approvals' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">Approve Requests</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('deptChart');
+        if(ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['CSE', 'ECE', 'MECH', 'CIVIL', 'BBA'],
+                    datasets: [{
+                        label: 'Students',
+                        data: [450, 300, 200, 150, 140],
+                        backgroundColor: '#5b58eb',
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

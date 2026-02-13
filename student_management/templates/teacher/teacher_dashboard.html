@@ -1,0 +1,75 @@
+{% extends 'teacher/base_teacher.html' %}
+
+{% block header_title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-brand"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div>
+            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">My Students</p><h3 class="text-2xl font-bold text-slate-800">120</h3></div>
+        </div>
+        <div class="glass-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div>
+            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Courses</p><h3 class="text-2xl font-bold text-slate-800">4</h3></div>
+        </div>
+        <div class="glass-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Homework Checked</p><h3 class="text-2xl font-bold text-slate-800">45/60</h3></div>
+        </div>
+        <div class="glass-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Avg Attendance</p><h3 class="text-2xl font-bold text-slate-800">92%</h3></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card p-6">
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Pending Assignments</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center font-bold text-slate-600">A</div>
+                        <div>
+                            <h4 class="font-bold text-sm">Algebra Quiz 1</h4>
+                            <p class="text-xs text-slate-500">15 students submitted</p>
+                        </div>
+                    </div>
+                    <button class="text-brand text-sm font-medium hover:underline">Grade</button>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center font-bold text-slate-600">E</div>
+                        <div>
+                            <h4 class="font-bold text-sm">English Speaking</h4>
+                            <p class="text-xs text-slate-500">5 audio files pending</p>
+                        </div>
+                    </div>
+                    <button class="text-brand text-sm font-medium hover:underline">Listen</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass-card p-6 bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex flex-col justify-between">
+            <div>
+                <h3 class="text-xl font-bold">Class Schedule</h3>
+                <p class="text-indigo-100 text-sm mt-1">Today's Lectures</p>
+            </div>
+            <div class="mt-6 space-y-3">
+                <div class="flex items-center gap-3 bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                    <span class="font-bold text-sm">09:00 AM</span>
+                    <span class="h-4 w-[1px] bg-indigo-300"></span>
+                    <span class="text-sm">Mathematics (Class 10-A)</span>
+                </div>
+                <div class="flex items-center gap-3 bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                    <span class="font-bold text-sm">11:30 AM</span>
+                    <span class="h-4 w-[1px] bg-indigo-300"></span>
+                    <span class="text-sm">Physics Lab (Class 12-B)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'teacher/base_teacher.html' %}
+
+{% block header_title %}Class Groups{% endblock %}
+
+{% block content %}
+<div class="glass-card p-6">
+    <div class="space-y-4">
+         <div class="flex items-center gap-4 p-4 border border-slate-50 rounded-2xl hover:bg-slate-50 transition">
+            <div class="w-12 h-12 rounded-full bg-indigo-100 text-brand flex items-center justify-center font-bold">10A</div>
+            <div>
+                <h4 class="font-bold text-slate-900">Class 10-A (Math)</h4>
+                <p class="text-xs text-slate-500">32 Students</p>
+            </div>
+            <button class="ml-auto text-brand text-sm font-medium">Open Chat</button>
+        </div>
+         <div class="flex items-center gap-4 p-4 border border-slate-50 rounded-2xl hover:bg-slate-50 transition">
+            <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">12B</div>
+            <div>
+                <h4 class="font-bold text-slate-900">Class 12-B (Physics)</h4>
+                <p class="text-xs text-slate-500">28 Students</p>
+            </div>
+             <button class="ml-auto text-brand text-sm font-medium">Open Chat</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'teacher/base_teacher.html' %}
+
+{% block header_title %}My Students{% endblock %}
+
+{% block content %}
+<div class="glass-card p-6 overflow-hidden">
+    <div class="mb-6 flex justify-between items-center">
+        <h3 class="font-bold text-slate-900">Enrolled Students</h3>
+        <select class="bg-slate-50 border-none text-sm rounded-lg px-4 py-2 focus:ring-brand">
+            <option>Class 10-A</option>
+            <option>Class 12-B</option>
+        </select>
+    </div>
+
+    <div class="space-y-4">
+        <!-- Student Item 1 -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border border-slate-100 rounded-2xl hover:bg-slate-50 transition">
+            <div class="flex items-center gap-4">
+                <img src="https://i.pravatar.cc/150?img=11" class="w-12 h-12 rounded-full">
+                <div>
+                    <h4 class="font-bold text-slate-900">Alex Morgan</h4>
+                    <p class="text-xs text-slate-500">Roll: 22 • Attendance: 90%</p>
+                </div>
+            </div>
+            <!-- Audio Section -->
+            <div class="flex items-center gap-3 bg-white px-3 py-2 rounded-xl border border-slate-100 shadow-sm w-full md:w-auto">
+                <div class="w-8 h-8 rounded-full bg-brandLight flex items-center justify-center text-brand">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">English Task</p>
+                    <audio controls class="h-6 w-48 scale-90 origin-left">
+                        <source src="" type="audio/mpeg">
+                    </audio>
+                </div>
+            </div>
+            <button class="text-brand text-sm font-medium">View Details</button>
+        </div>
+
+        <!-- Student Item 2 -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border border-slate-100 rounded-2xl hover:bg-slate-50 transition">
+            <div class="flex items-center gap-4">
+                <img src="https://i.pravatar.cc/150?img=5" class="w-12 h-12 rounded-full">
+                <div>
+                    <h4 class="font-bold text-slate-900">Emily Blunt</h4>
+                    <p class="text-xs text-slate-500">Roll: 23 • Attendance: 85%</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-white px-3 py-2 rounded-xl border border-slate-100 shadow-sm w-full md:w-auto">
+                <div class="w-8 h-8 rounded-full bg-brandLight flex items-center justify-center text-brand">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">English Task</p>
+                    <span class="text-xs text-slate-500 italic">No submission yet</span>
+                </div>
+            </div>
+            <button class="text-brand text-sm font-medium">View Details</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

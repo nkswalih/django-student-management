@@ -1,0 +1,69 @@
+{% extends 'principal/base_principal.html' %}
+
+{% block header_title %}Manage Users{% endblock %}
+
+{% block content %}
+<div x-data="{ tab: 'students' }">
+    <!-- Tabs -->
+    <div class="flex gap-4 mb-6 border-b border-slate-200">
+        <button @click="tab = 'students'" :class="tab === 'students' ? 'text-brand border-b-2 border-brand font-bold' : 'text-slate-500 font-medium'" class="pb-2 px-4 transition">Students</button>
+        <button @click="tab = 'teachers'" :class="tab === 'teachers' ? 'text-brand border-b-2 border-brand font-bold' : 'text-slate-500 font-medium'" class="pb-2 px-4 transition">Teachers</button>
+    </div>
+
+    <!-- Students List -->
+    <div x-show="tab === 'students'" class="glass-card p-6 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="text-slate-400 text-xs uppercase border-b border-slate-100">
+                    <th class="pb-3 pl-2">Name</th>
+                    <th class="pb-3">Reg No</th>
+                    <th class="pb-3">Dept</th>
+                    <th class="pb-3 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm">
+                <!-- Row 1 -->
+                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                    <td class="py-3 pl-2 font-bold text-slate-700">Alex Morgan</td>
+                    <td class="py-3 text-slate-500">0310941</td>
+                    <td class="py-3 text-slate-500">CSE</td>
+                    <td class="py-3 text-right">
+                        <button class="text-brand hover:underline font-medium">Edit</button>
+                    </td>
+                </tr>
+                <!-- Row 2 -->
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3 pl-2 font-bold text-slate-700">Sarah Jones</td>
+                    <td class="py-3 text-slate-500">0310942</td>
+                    <td class="py-3 text-slate-500">ECE</td>
+                    <td class="py-3 text-right">
+                        <button class="text-brand hover:underline font-medium">Edit</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Teachers List -->
+    <div x-show="tab === 'teachers'" x-cloak class="glass-card p-6 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="text-slate-400 text-xs uppercase border-b border-slate-100">
+                    <th class="pb-3 pl-2">Name</th>
+                    <th class="pb-3">Subject</th>
+                    <th class="pb-3 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm">
+                 <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                    <td class="py-3 pl-2 font-bold text-slate-700">Mr. John Anderson</td>
+                    <td class="py-3 text-slate-500">Mathematics</td>
+                    <td class="py-3 text-right">
+                        <button class="text-brand hover:underline font-medium">Edit</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -2,28 +2,34 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from accounts.decorators import role_required
 
 # Create your views here.
 def home(request):
     return render(request, 'school/home.html')
 
 @login_required
+@role_required('Student')
 def dashboard(request):
     return render(request, 'school/dashboard.html')
 
 @login_required
+@role_required('Student')
 def my_courses(request):
     return render(request, 'school/my_courses.html')
 
 @login_required
+@role_required('Student')
 def purchase_course(request):
     return render(request, 'school/purchase.html')
 
 @login_required
+@role_required('Student')
 def class_group(request):
     return render(request, 'school/class_group.html')
 
 @login_required
+@role_required('Student')
 def student_profile(request):
     if request.method == 'POST':
         user = request.user

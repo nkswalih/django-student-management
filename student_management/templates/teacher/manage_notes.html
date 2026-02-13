@@ -1,0 +1,49 @@
+{% extends 'teacher/base_teacher.html' %}
+
+{% block header_title %}Manage Course Notes{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Upload Form -->
+    <div class="glass-card p-6 h-fit">
+        <h3 class="font-bold text-slate-900 mb-4">Add Study Material</h3>
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Course</label>
+                <select class="w-full px-4 py-2 rounded-xl bg-slate-50 border-none focus:ring-brand text-sm">
+                    <option>Mathematics 101</option>
+                    <option>Physics Lab</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Title</label>
+                <input type="text" placeholder="e.g. Algebra Chapter 1" class="w-full px-4 py-2 rounded-xl bg-slate-50 border-none focus:ring-brand text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Upload File</label>
+                <input type="file" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brandLight file:text-brand hover:file:bg-indigo-100">
+            </div>
+            <button class="w-full bg-brand text-white py-2.5 rounded-xl font-medium shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">Upload Note</button>
+        </form>
+    </div>
+
+    <!-- List -->
+    <div class="lg:col-span-2 space-y-4">
+        <h3 class="font-bold text-slate-900 mb-2">Uploaded Notes</h3>
+        
+        <div class="glass-card p-4 flex items-center justify-between group">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-slate-800">Algebra_Basics.pdf</h4>
+                    <p class="text-xs text-slate-500">Math 101 • 2.4 MB</p>
+                </div>
+            </div>
+            <button class="text-slate-400 hover:text-red-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+        </div>
+    </div>
+</div>
+{% endblock %}

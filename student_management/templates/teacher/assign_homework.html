@@ -1,0 +1,37 @@
+{% extends 'teacher/base_teacher.html' %}
+
+{% block header_title %}Assign Homework{% endblock %}
+
+{% block content %}
+<div class="glass-card p-6 mb-8">
+    <h3 class="font-bold text-slate-900 mb-4">Create New Task</h3>
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label class="text-xs font-bold text-slate-500 uppercase">Assignment Title</label>
+            <input type="text" class="w-full mt-1 px-4 py-2 rounded-xl bg-slate-50 border-none focus:ring-brand">
+        </div>
+        <div>
+            <label class="text-xs font-bold text-slate-500 uppercase">Due Date</label>
+            <input type="date" class="w-full mt-1 px-4 py-2 rounded-xl bg-slate-50 border-none focus:ring-brand">
+        </div>
+        <div class="md:col-span-2">
+            <label class="text-xs font-bold text-slate-500 uppercase">Instructions</label>
+            <textarea rows="3" class="w-full mt-1 px-4 py-2 rounded-xl bg-slate-50 border-none focus:ring-brand"></textarea>
+        </div>
+        <div class="md:col-span-2 flex justify-end">
+            <button class="bg-brand text-white px-6 py-2.5 rounded-xl font-medium shadow-lg hover:bg-indigo-700">Assign Task</button>
+        </div>
+    </form>
+</div>
+
+<div class="space-y-4">
+    <h3 class="font-bold text-slate-900">Active Assignments</h3>
+    <div class="glass-card p-4 flex justify-between items-center">
+        <div>
+            <h4 class="font-bold text-slate-800">Solve Chapter 3 Equations</h4>
+            <p class="text-xs text-slate-500">Due: 25th Oct • 10 Submissions</p>
+        </div>
+        <span class="bg-green-100 text-green-600 text-xs font-bold px-2 py-1 rounded">Active</span>
+    </div>
+</div>
+{% endblock %}
