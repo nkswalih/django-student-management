@@ -15,31 +15,42 @@
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="text-slate-400 text-xs uppercase border-b border-slate-100">
-                    <th class="pb-3 pl-2">Name</th>
                     <th class="pb-3">Reg No</th>
+                    <th class="pb-3 pl-2">Name</th>
                     <th class="pb-3">Dept</th>
+                    <th class="pb-3">Email</th>
+                    <th class="pb-3">Phone</th>
+                    <th class="pb-3">Gender</th>
+                    <th class="pb-3">Created at</th>
                     <th class="pb-3 text-right">Action</th>
                 </tr>
             </thead>
             <tbody class="text-sm">
-                <!-- Row 1 -->
-                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
-                    <td class="py-3 pl-2 font-bold text-slate-700">Alex Morgan</td>
-                    <td class="py-3 text-slate-500">0310941</td>
-                    <td class="py-3 text-slate-500">CSE</td>
-                    <td class="py-3 text-right">
-                        <button class="text-brand hover:underline font-medium">Edit</button>
-                    </td>
-                </tr>
-                <!-- Row 2 -->
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="py-3 pl-2 font-bold text-slate-700">Sarah Jones</td>
-                    <td class="py-3 text-slate-500">0310942</td>
-                    <td class="py-3 text-slate-500">ECE</td>
-                    <td class="py-3 text-right">
-                        <button class="text-brand hover:underline font-medium">Edit</button>
-                    </td>
-                </tr>
+            {% for student in students %}
+            <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                <td class="py-3 text-slate-500">{{ student.reg_number }}</td>
+                <td class="py-3 pl-2 font-bold text-slate-700">
+                    {{ student.first_name }} {{ student.last_name }}
+                </td>
+                <td class="py-3 text-slate-500">{{ student.department }}</td>
+                <td class="py-3 text-slate-500">{{ student.email }}</td>
+                <td class="py-3 text-slate-500">{{ student.phone }}</td>
+                <td class="py-3 text-slate-500">{{ student.gender }}</td>
+                <td class="py-3 text-slate-500">{{ student.date_joined }}</td>
+                <td class="py-3 text-right">
+                    <a href="{% url 'edit_user' student.id %}"
+                    class="text-brand hover:underline font-medium">
+                    Edit
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="py-3 text-center text-slate-400">
+                    No students found.
+                </td>
+            </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
@@ -50,18 +61,41 @@
             <thead>
                 <tr class="text-slate-400 text-xs uppercase border-b border-slate-100">
                     <th class="pb-3 pl-2">Name</th>
+                    <th class="pb-3 pl-2">Email</th>
+                    <th class="pb-3 pl-2">Phone</th>
                     <th class="pb-3">Subject</th>
                     <th class="pb-3 text-right">Action</th>
                 </tr>
             </thead>
             <tbody class="text-sm">
-                 <tr class="hover:bg-slate-50 transition border-b border-slate-50">
-                    <td class="py-3 pl-2 font-bold text-slate-700">Mr. John Anderson</td>
-                    <td class="py-3 text-slate-500">Mathematics</td>
-                    <td class="py-3 text-right">
-                        <button class="text-brand hover:underline font-medium">Edit</button>
-                    </td>
-                </tr>
+            {% for teacher in teachers %}
+            <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                <td class="py-3 pl-2 font-bold text-slate-700">
+                    {{ teacher.first_name }} {{ teacher.last_name }}
+                </td>
+                <td class="py-3 text-slate-500">
+                    {{ teacher.email }}
+                </td>
+                <td class="py-3 text-slate-500">
+                    {{ teacher.phone }}
+                </td>
+                <td class="py-3 text-slate-500">
+                    {{ teacher.department }}
+                </td>
+                <td class="py-3 text-right">
+                    <a href="{% url 'edit_user' teacher.id %}"
+                    class="text-brand hover:underline font-medium">
+                    Edit
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="py-3 text-center text-slate-400">
+                    No teachers found.
+                </td>
+            </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>

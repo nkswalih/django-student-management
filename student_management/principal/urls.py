@@ -7,7 +7,10 @@ urlpatterns = [
     # path('user/<int:student_id>/', views.view_users, name='view_users'),
     path('manage-users/', views.manage_user, name='manage_users'),
     path('course-list/', views.course_list, name='course_approvals'),
-
+    path('delete-course/<int:pk>/', views.delete_course, name='delete_course'),
+    path('edit-course/<int:pk>/', views.edit_course, name='edit_course'),
+    path('view-course/<int:pk>/', views.view_course, name='view_course'),
+    path('edit-user/<int:pk>/', views.edit_user, name='edit_user'),
     # Teacher
     path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
     path('manage-notes/', views.manage_notes, name='manage_notes'),

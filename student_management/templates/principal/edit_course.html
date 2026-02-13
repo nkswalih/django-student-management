@@ -1,0 +1,84 @@
+{% extends 'principal/base_principal.html' %}
+
+{% block header_title %}Edit Course{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Back Link -->
+    <a href="{% url 'manage_courses' %}" class="inline-flex items-center gap-2 text-slate-500 hover:text-brand mb-6 transition text-sm font-medium">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Back to Courses
+    </a>
+
+    <div class="glass-card p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-slate-900">Edit Course Details</h2>
+            <span class="text-xs text-slate-400 font-mono bg-slate-100 px-2 py-1 rounded">ID: {{ course.course_id }}</span>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-5">
+            {% csrf_token %}
+            
+            <!-- Banner Image Upload Section -->
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Course Banner Image</label>
+                
+                <div class="flex items-center gap-6">
+                    <!-- Current Image Preview -->
+                    {% if course.image %}
+                        <div class="relative group">
+                            <img src="{{ course.image.url }}" class="w-32 h-20 object-cover rounded-xl border border-slate-200">
+                            <div class="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                <span class="text-white text-xs font-medium">Current</span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="w-32 h-20 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 border border-slate-200">
+                            <span class="text-xs">No Image</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- File Input -->
+                    <label class="flex-1 cursor-pointer">
+                        {{ form.image }}
+                    </label>
+                </div>
+            </div>
+
+            <!-- Basic Info Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Course Name</label>
+                    {{ form.course_name }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Course ID</label>
+                    {{ form.course_id }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Price ($)</label>
+                    {{ form.price }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Department</label>
+                    {{ form.department }}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
+                {{ form.description }}
+            </div>
+
+            <!-- Actions -->
+            <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-4">
+                <a href="{% url 'manage_courses' %}" class="px-6 py-2.5 rounded-xl text-slate-500 font-bold text-sm hover:bg-slate-50 transition">Cancel</a>
+                <button type="submit" class="bg-brand text-white px-8 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 transform hover:-translate-y-0.5 transition-all">
+                    Update Course
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

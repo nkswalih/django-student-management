@@ -1,0 +1,23 @@
+{% extends 'principal/base_principal.html' %}
+
+{% block header_title %}Edit User{% endblock %}
+
+{% block content %}
+<div class="glass-card p-8 max-w-3xl mx-auto">
+
+    <h2 class="text-xl font-bold mb-6">
+        Edit {{ user_obj.first_name }} {{ user_obj.last_name }}
+    </h2>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit"
+                class="bg-brand text-white px-6 py-2 rounded-xl">
+            Update User
+        </button>
+    </form>
+
+</div>
+{% endblock %}
