@@ -4,68 +4,205 @@
 
 {% block content %}
 <div class="space-y-6">
-    
-    <!-- Stats Row -->
+
+    <!-- ✅ DYNAMIC Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
         <div class="glass-card p-6 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div>
-            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Total Students</p><h3 class="text-2xl font-bold text-slate-800">1,240</h3></div>
+            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            </div>
+            <div>
+                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Total Students</p>
+                <h3 class="text-2xl font-bold text-slate-800">{{ total_students }}</h3>
+            </div>
         </div>
+
         <div class="glass-card p-6 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
-            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Total Depts</p><h3 class="text-2xl font-bold text-slate-800">5</h3></div>
+            <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </div>
+            <div>
+                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Total Teachers</p>
+                <h3 class="text-2xl font-bold text-slate-800">{{ total_teachers }}</h3>
+            </div>
         </div>
+
         <div class="glass-card p-6 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Pending Req</p><h3 class="text-2xl font-bold text-slate-800">15</h3></div>
+            <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Pending Requests</p>
+                <h3 class="text-2xl font-bold text-slate-800">{{ pending_requests }}</h3>
+            </div>
         </div>
+
         <div class="glass-card p-6 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-            <div><p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Active Courses</p><h3 class="text-2xl font-bold text-slate-800">24</h3></div>
+            <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Total Courses</p>
+                <h3 class="text-2xl font-bold text-slate-800">{{ total_courses }}</h3>
+            </div>
         </div>
     </div>
 
-    <!-- Chart & Overview -->
+    <!-- ✅ Chart + Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- ✅ DYNAMIC Bar Chart -->
         <div class="lg:col-span-2 glass-card p-8">
-            <h3 class="text-lg font-bold text-slate-900 mb-6">Department Overview</h3>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-slate-900">Students by Department</h3>
+                <span class="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Live Data</span>
+            </div>
             <div class="relative h-64 w-full">
                 <canvas id="deptChart"></canvas>
             </div>
         </div>
 
+        <!-- Quick Actions -->
         <div class="glass-card p-6 bg-gradient-to-br from-[#807ee9] to-[#5b58eb] text-white">
             <h3 class="text-lg font-bold">Quick Actions</h3>
             <p class="text-indigo-100 text-sm mb-6">Manage your portal efficiently.</p>
             <div class="space-y-3">
-                <a href="{% url 'manage_courses' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">Add New Course +</a>
-                <a href="{% url 'manage_users' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">Verify Students</a>
-                <a href="{% url 'course_approvals' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">Approve Requests</a>
+                <a href="{% url 'manage_courses' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">
+                    ➕ Add New Course
+                </a>
+                <a href="{% url 'manage_users' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">
+                    👥 Manage Users
+                </a>
+                <a href="{% url 'course_approvals' %}" class="block bg-white/20 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/30 transition">
+                    ✅ Approve Requests
+                </a>
+            </div>
+
+            <!-- ✅ Mini stats inside card -->
+            <div class="mt-6 pt-4 border-t border-white/20 grid grid-cols-2 gap-3">
+                <div class="bg-white/10 rounded-xl p-3 text-center">
+                    <p class="text-2xl font-bold">{{ total_students }}</p>
+                    <p class="text-indigo-200 text-xs">Students</p>
+                </div>
+                <div class="bg-white/10 rounded-xl p-3 text-center">
+                    <p class="text-2xl font-bold">{{ total_courses }}</p>
+                    <p class="text-indigo-200 text-xs">Courses</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
+    <!-- ✅ Recent Students Table -->
+    <div class="glass-card p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-bold text-slate-900">Recently Registered Students</h3>
+            <a href="{% url 'manage_users' %}" class="text-brand text-sm font-semibold hover:underline">View All →</a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-xs font-bold text-slate-400 uppercase border-b border-slate-100">
+                        <th class="pb-3 pr-4">Student</th>
+                        <th class="pb-3 pr-4">Reg No.</th>
+                        <th class="pb-3 pr-4">Department</th>
+                        <th class="pb-3 pr-4">Course</th>
+                        <th class="pb-3">Joined</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for student in recent_students %}
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-3 pr-4">
+                            <div class="flex items-center gap-3">
+                                {% if student.profile_picture %}
+                                    <img src="{{ student.profile_picture.url }}"
+                                         class="w-8 h-8 rounded-full object-cover">
+                                {% else %}
+                                    <div class="w-8 h-8 rounded-full bg-brandLight text-brand flex items-center justify-center text-xs font-bold">
+                                        {{ student.first_name|slice:":1" }}{{ student.last_name|slice:":1" }}
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <p class="font-semibold text-slate-800">{{ student.first_name }} {{ student.last_name }}</p>
+                                    <p class="text-xs text-slate-400">{{ student.email }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 pr-4 text-slate-600 font-mono text-xs">
+                            {{ student.reg_number|default:"—" }}
+                        </td>
+                        <td class="py-3 pr-4">
+                            <span class="bg-brandLight text-brand text-xs font-semibold px-2 py-1 rounded-full">
+                                {{ student.department|default:"—" }}
+                            </span>
+                        </td>
+                        <td class="py-3 pr-4 text-slate-600">
+                            {{ student.course|default:"—" }}
+                        </td>
+                        <td class="py-3 text-slate-400 text-xs">
+                            {{ student.date_joined|date:"d M Y" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-slate-400 text-sm">
+                            No students registered yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('deptChart');
-        if(ctx) {
+        if (ctx) {
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['CSE', 'ECE', 'MECH', 'CIVIL', 'BBA'],
+                    // ✅ Labels and data from Django context
+                    labels: {{ dept_labels|safe }},
                     datasets: [{
                         label: 'Students',
-                        data: [450, 300, 200, 150, 140],
-                        backgroundColor: '#5b58eb',
-                        borderRadius: 6,
+                        data: {{ dept_counts|safe }},
+                        backgroundColor: [
+                            '#5b58eb', '#818cf8', '#a5b4fc',
+                            '#c7d2fe', '#e0e7ff'
+                        ],
+                        borderRadius: 8,
+                        borderSkipped: false,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } },
-                    plugins: { legend: { display: false } }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { size: 11 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.parsed.y} students`
+                            }
+                        }
+                    }
                 }
             });
         }

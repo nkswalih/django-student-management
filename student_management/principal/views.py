@@ -6,15 +6,54 @@ from accounts.decorators import role_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from .models import Course
-from .forms import CourseForm, UserEditForm
-
+from .forms import CourseForm, UserEditForm, EditUsersForm
+from accounts.models import Student
+from django.contrib.auth.models import Group
 
 # Create your views here.
 User = get_user_model()
 
 @role_required('Principal')
 def principal_dashboard(request):
-    return render(request, 'principal/principal_dashboard.html')
+
+    # --- Stats ---
+    students_group = Group.objects.get(name='Student')
+    teachers_group = Group.objects.get(name='Teacher')
+
+    total_students = User.objects.filter(groups=students_group).count()
+    total_teachers = User.objects.filter(groups=teachers_group).count()
+    total_courses = Course.objects.count()
+    active_courses  = Course.objects.filter(is_active=True).count()
+
+    # Department counts
+    dept_labels = ['CSE', 'ECE', 'MECH', 'CIVIL', 'BBA']
+    dept_counts = [
+        Student.objects.filter(department=dept).count()
+        for dept in dept_labels
+    ]
+
+    # Pending course requests (if you have CourseRequest model)
+    # pending_requests = CourseRequest.objects.filter(status='pending').count()
+    # For now use 0 if model doesn't exist yet
+    pending_requests = 0
+
+    # Recent students (last 5 registered)
+    recent_students = Student.objects.filter(
+        groups=students_group
+    ).order_by('-date_joined')[:5]
+
+    context = {
+        'total_students':  total_students,
+        'total_teachers':  total_teachers,
+        'total_courses':   total_courses,
+        'active_courses':  active_courses,
+        'pending_requests': pending_requests,
+        'dept_labels':     dept_labels,
+        'dept_counts':     dept_counts,
+        'recent_students': recent_students,
+    }
+
+    return render(request, 'principal/principal_dashboard.html', context)
 
 @role_required('Principal')
 def manage_course(request):
@@ -89,20 +128,22 @@ def manage_user(request):
 
 @role_required('Principal')
 def edit_user(request, pk):
-    user = get_object_or_404(User, pk=pk)
+    user_obj = get_object_or_404(Student, pk=pk)
 
     if request.method == 'POST':
-        form = UserEditForm(request.POST, instance=user)
+        form = EditUsersForm(request.POST, request.FILES, instance=user_obj)
         if form.is_valid():
             form.save()
             messages.success(request, "User updated successfully.")
             return redirect('manage_users')
+        else:
+            messages.error(request, f"Please fix the errors: {form.errors}")
     else:
-        form = UserEditForm(instance=user)
+        form = EditUsersForm(instance=user_obj)
 
     return render(request, 'principal/edit_user.html', {
         'form': form,
-        'user_obj': user
+        'user_obj': user_obj
     })
 
 

@@ -1,6 +1,7 @@
 from django import forms
 from .models import Course
 from django.contrib.auth import get_user_model
+from accounts.models import Student
 
 User = get_user_model()
 
@@ -40,3 +41,49 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
         exclude = ['password', 'email', 'groups', 'user_permissions']
+
+class EditUsersForm(forms.ModelForm):
+
+    class Meta:
+        model = Student
+        fields = [
+            'first_name',
+            'last_name',
+            'phone',
+            'gender',
+            'reg_number',
+            'year_of_admission',
+            'department',
+            'course',
+            'is_active',
+        ]
+
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium'
+            }),
+            'gender': forms.Select(attrs={
+                'class': 'w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium'
+            }),
+            'reg_number': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium'
+            }),
+            'year_of_admission': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium'
+            }),
+            'department': forms.Select(attrs={
+                'class': 'w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium'
+            }),
+            'course': forms.Select(attrs={
+                'class': 'w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium'
+            }),
+            'is_active': forms.CheckboxInput(attrs={
+                'class': 'peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-brand checked:bg-brand'
+            }),
+        }

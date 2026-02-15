@@ -22,27 +22,40 @@ class StudentManager(BaseUserManager):
 
 
 class Student(AbstractUser):
-    """
-    Custom User model for Students.
-    Inherits from AbstractUser to handle authentication.
-    """
 
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Others'),
+    ]
+    
+    DEPT_CHOICES = [
+        ('CSE', 'Computer Science'),
+        ('ECE', 'Electronics & Comm'),
+        ('MECH', 'Mechanical Eng'),
+        ('CIVIL', 'Civil Engineering'),
+        ('BBA', 'Business Admin'),
+    ]
+
+    COURSE_CHOICES = [
+        ('BTECH', 'B.Tech'),
+        ('MTECH', 'M.Tech'),
+        ('BCA', 'BCA'),
+        ('MCA', 'MCA'),
+        ('MBA', 'MBA'),
+    ]
     # -- Personal Details --
     profile_picture = models.ImageField(upload_to='students/profile_pics/', blank=True, null=True)
     phone = models.CharField(max_length=12, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
 
-    GENDER_CHOICES = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
-    ]
+
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='O')
 
     # -- Academic Details --
     reg_number = models.CharField(max_length=20, unique=True, blank=True, null=True, help_text="Unique Student Registration ID")
-    department = models.CharField(max_length=100, blank=True)
-    course = models.CharField(max_length=100, blank=True)
+    department = models.CharField(max_length=100, choices=DEPT_CHOICES, blank=True)
+    course = models.CharField(max_length=100, choices=COURSE_CHOICES, blank=True)
     year_of_admission = models.PositiveIntegerField(default=2026)
 
     # Username is auto-generated
