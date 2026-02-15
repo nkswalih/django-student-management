@@ -88,13 +88,7 @@ student_management/
 
 ## 📸 Screenshots
 
-_Add screenshots here_
-
-```
-/screenshots/dashboard.png
-/screenshots/course-list.png
-/screenshots/voice-recorder.png
-```
+<img width="1800" height="1200" alt="stud_mangement collage" src="https://github.com/user-attachments/assets/d874f081-7402-4009-b638-74a854e6f2d6" />
 
 ---
 
