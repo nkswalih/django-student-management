@@ -3,40 +3,184 @@
 {% block header_title %}Pending Approvals{% endblock %}
 
 {% block content %}
-<div class="glass-card p-6">
-    <h3 class="text-lg font-bold text-slate-900 mb-6">Course Purchase Requests</h3>
-    
-    <div class="space-y-4">
-        <!-- Request Item 1 -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
-            <div class="flex items-center gap-4">
-                <img src="https://i.pravatar.cc/150?img=11" class="w-12 h-12 rounded-full border border-white shadow-sm">
-                <div>
-                    <h4 class="font-bold text-slate-800">Alex Morgan</h4>
-                    <p class="text-xs text-slate-500">Req: <span class="text-slate-800 font-semibold">Advanced Python</span> • ID: 0310941</p>
-                </div>
+<div class="space-y-6">
+
+    <!-- Header Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass-card p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-yellow-50 text-yellow-500 flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
             </div>
-            <div class="flex items-center gap-3">
-                <button class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-100 transition">View Details</button>
-                <button class="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-medium hover:bg-green-600 shadow-md shadow-green-200 transition">Approve</button>
-                <button class="px-4 py-2 bg-red-50 text-red-500 rounded-xl text-sm font-medium hover:bg-red-100 transition">Reject</button>
+            <div>
+                <p class="text-xs text-slate-400 font-semibold uppercase">Pending</p>
+                <p class="text-2xl font-bold text-slate-800">
+                    {{ pending|length }}
+                </p>
             </div>
         </div>
+        <div class="glass-card p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-semibold uppercase">Approved</p>
+                <p class="text-2xl font-bold text-slate-800">
+                    {{ approved_count }}
+                </p>
+            </div>
+        </div>
+        <div class="glass-card p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-semibold uppercase">Rejected</p>
+                <p class="text-2xl font-bold text-slate-800">
+                    {{ rejected_count }}
+                </p>
+            </div>
+        </div>
+    </div>
 
-        <!-- Request Item 2 -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
-            <div class="flex items-center gap-4">
-                <img src="https://i.pravatar.cc/150?img=5" class="w-12 h-12 rounded-full border border-white shadow-sm">
-                <div>
-                    <h4 class="font-bold text-slate-800">Emily Blunt</h4>
-                    <p class="text-xs text-slate-500">Req: <span class="text-slate-800 font-semibold">UI/UX Fundamentals</span> • ID: 0310955</p>
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-3
+                {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200
+                {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-700 border border-yellow-200
+                {% else %}bg-red-50 text-red-700 border border-red-200{% endif %}">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Pending Requests -->
+    <div class="glass-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <span class="w-1 h-5 bg-brand rounded-full inline-block"></span>
+                Course Purchase Requests
+            </h3>
+            <span class="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full font-medium">
+                {{ pending|length }} pending
+            </span>
+        </div>
+
+        <div class="space-y-4">
+            {% for enrollment in pending %}
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border border-slate-100 rounded-2xl hover:bg-slate-50 transition">
+
+                <!-- Left: Student Info -->
+                <div class="flex items-center gap-4">
+                    <!-- Profile Picture -->
+                    {% if enrollment.student.profile_picture %}
+                        <img src="{{ enrollment.student.profile_picture.url }}"
+                             class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">
+                    {% else %}
+                        <div class="w-12 h-12 rounded-full bg-brandLight text-brand flex items-center justify-center text-sm font-bold border-2 border-white shadow-sm">
+                            {{ enrollment.student.first_name|slice:":1" }}{{ enrollment.student.last_name|slice:":1" }}
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        <h4 class="font-bold text-slate-800">
+                            {{ enrollment.student.first_name }} {{ enrollment.student.last_name }}
+                        </h4>
+                        <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <!-- Course name -->
+                            <div class="flex items-center gap-1 text-xs text-slate-500">
+                                <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                                <span class="font-semibold text-slate-700">{{ enrollment.course.course_name }}</span>
+                            </div>
+
+                            <!-- Separator -->
+                            <span class="text-slate-200">|</span>
+
+                            <!-- Reg Number -->
+                            <div class="flex items-center gap-1 text-xs text-slate-400 font-mono">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9l-6 6M9 9l6 6"/>
+                                </svg>
+                                {{ enrollment.student.reg_number|default:"No ID" }}
+                            </div>
+
+                            <!-- Price -->
+                            <span class="text-slate-200">|</span>
+                            <div class="flex items-center gap-1 text-xs text-slate-500">
+                                <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                ${{ enrollment.course.price }}
+                            </div>
+
+                            <!-- Date -->
+                            <span class="text-slate-200">|</span>
+                            <div class="flex items-center gap-1 text-xs text-slate-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                {{ enrollment.enrolled_at|date:"d M Y" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Action Buttons -->
+                <div class="flex items-center gap-2 flex-shrink-0">
+
+                    <!-- Approve -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="enrollment_id" value="{{ enrollment.id }}">
+                        <input type="hidden" name="action" value="approve">
+                        <button type="submit"
+                                class="flex items-center gap-1.5 px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 shadow-md shadow-green-100 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Approve
+                        </button>
+                    </form>
+
+                    <!-- Reject -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="enrollment_id" value="{{ enrollment.id }}">
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit"
+                                class="flex items-center gap-1.5 px-4 py-2 bg-red-50 text-red-500 rounded-xl text-sm font-semibold hover:bg-red-100 border border-red-100 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Reject
+                        </button>
+                    </form>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <button class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-100 transition">View Details</button>
-                <button class="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-medium hover:bg-green-600 shadow-md shadow-green-200 transition">Approve</button>
-                <button class="px-4 py-2 bg-red-50 text-red-500 rounded-xl text-sm font-medium hover:bg-red-100 transition">Reject</button>
+
+            {% empty %}
+            <!-- Empty State -->
+            <div class="text-center py-16">
+                <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <p class="font-bold text-slate-700">All caught up!</p>
+                <p class="text-sm text-slate-400 mt-1">No pending course requests at the moment.</p>
             </div>
+            {% endfor %}
         </div>
     </div>
 </div>

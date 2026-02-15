@@ -3,32 +3,73 @@
 {% block header_title %}Available Courses{% endblock %}
 
 {% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="mb-6 p-4 rounded-xl text-sm font-medium
+            {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200
+            {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-700 border border-yellow-200
+            {% else %}bg-red-50 text-red-700 border border-red-200{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- Course 1 -->
-    <div class="glass-card p-4 hover:shadow-lg transition">
-        <div class="h-32 bg-blue-100 rounded-xl mb-4 flex items-center justify-center text-blue-500">
-            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+    {% for course in courses %}
+    <div class="glass-card overflow-hidden hover:shadow-lg transition group">
+
+        <!-- Banner -->
+        <div class="h-36 w-full relative overflow-hidden">
+            {% if course.image %}
+                <img src="{{ course.image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            {% else %}
+                <div class="w-full h-full bg-gradient-to-br from-indigo-400 to-brand flex items-center justify-center">
+                    <span class="text-white font-bold text-3xl opacity-40">{{ course.course_name|slice:":2" }}</span>
+                </div>
+            {% endif %}
+
+            <!-- Dept badge on image -->
+            <span class="absolute top-3 left-3 bg-white/90 backdrop-blur text-brand text-[10px] font-bold px-2 py-1 rounded-full">
+                {{ course.department }}
+            </span>
         </div>
-        <div class="flex justify-between items-start mb-2">
-            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded">Coding</span>
-            <span class="font-bold text-slate-800">$49</span>
+
+        <!-- Content -->
+        <div class="p-5">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-slate-400 text-[10px] font-mono">{{ course.course_id }}</span>
+                <span class="font-extrabold text-slate-800 text-lg">${{ course.price }}</span>
+            </div>
+
+            <h3 class="font-bold text-slate-900 text-base mb-1">{{ course.course_name }}</h3>
+            <p class="text-xs text-slate-500 mb-4 line-clamp-2">{{ course.description }}</p>
+            <!-- Buy / Already enrolled state -->
+            {% if course.id in enrolled_ids %}
+            <div class="w-full flex items-center justify-center gap-2 bg-green-50 text-green-700 py-2 rounded-xl text-sm font-semibold border border-green-100">
+                <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>Already Enrolled</span>
+            </div>
+
+            {% else %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="course_id" value="{{ course.id }}">
+                    <button type="submit"
+                            class="w-full bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-700 transition">
+                        Buy Now
+                    </button>
+                </form>
+            {% endif %}
         </div>
-        <h3 class="font-bold text-slate-900">Advanced Python</h3>
-        <p class="text-xs text-slate-500 mt-1 mb-4">Master backend development with Django.</p>
-        <button class="w-full bg-dark text-white py-2 rounded-xl text-sm font-medium hover:bg-slate-800">Buy Now</button>
     </div>
-    <!-- Course 2 -->
-    <div class="glass-card p-4 hover:shadow-lg transition">
-        <div class="h-32 bg-purple-100 rounded-xl mb-4 flex items-center justify-center text-purple-500">
-            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+    {% empty %}
+        <div class="col-span-3 text-center py-20 text-slate-400">
+            <p class="text-lg font-semibold">No courses available yet.</p>
+            <p class="text-sm mt-1">Check back soon!</p>
         </div>
-        <div class="flex justify-between items-start mb-2">
-            <span class="bg-purple-50 text-purple-600 text-[10px] font-bold px-2 py-1 rounded">Design</span>
-            <span class="font-bold text-slate-800">$35</span>
-        </div>
-        <h3 class="font-bold text-slate-900">UI/UX Fundamentals</h3>
-        <p class="text-xs text-slate-500 mt-1 mb-4">Learn to design beautiful interfaces.</p>
-        <button class="w-full bg-dark text-white py-2 rounded-xl text-sm font-medium hover:bg-slate-800">Buy Now</button>
-    </div>
+    {% endfor %}
 </div>
 {% endblock %}

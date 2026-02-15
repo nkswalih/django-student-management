@@ -9,6 +9,7 @@ from .models import Course
 from .forms import CourseForm, UserEditForm, EditUsersForm
 from accounts.models import Student
 from django.contrib.auth.models import Group
+from principal.models import Enrollment
 
 # Create your views here.
 User = get_user_model()
@@ -148,8 +149,37 @@ def edit_user(request, pk):
 
 
 @role_required('Principal')
-def course_list(request):
-    return render(request, 'principal/course_approvals.html')
+def course_approvals(request):
+    from principal.models import Enrollment
+
+    pending = Enrollment.objects.filter(
+        status='pending'
+    ).select_related('student', 'course').order_by('-enrolled_at')
+
+    approved_count = Enrollment.objects.filter(status='approved').count()
+    rejected_count = Enrollment.objects.filter(status='rejected').count()
+
+    if request.method == 'POST':
+        enrollment_id = request.POST.get('enrollment_id')
+        action = request.POST.get('action')
+        enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+
+        if action == 'approve':
+            enrollment.status = 'approved'
+            messages.success(request, f"Approved {enrollment.student.first_name}'s request for {enrollment.course.course_name}.")
+        elif action == 'reject':
+            enrollment.status = 'rejected'
+            messages.warning(request, f"Rejected {enrollment.student.first_name}'s request for {enrollment.course.course_name}.")
+
+        enrollment.save()
+        return redirect('course_approvals')
+
+    context = {
+        'pending': pending,
+        'approved_count': approved_count,
+        'rejected_count': rejected_count,
+    }
+    return render(request, 'principal/course_approvals.html', context)
 
 
 # ---------Teacher---------

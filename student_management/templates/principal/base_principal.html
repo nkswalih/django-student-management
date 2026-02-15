@@ -112,9 +112,16 @@
                 </a>
 
                 <a href="{% url 'course_approvals' %}" 
-                   class="sidebar-link flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 font-medium text-sm {% if request.resolver_match.url_name == 'course_approvals' %}active{% else %}hover:text-white hover:bg-[#2c2c35]{% endif %}">
-                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Approvals <span class="ml-auto bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">3</span>
+                class="sidebar-link flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 font-medium text-sm {% if request.resolver_match.url_name == 'course_approvals' %}active{% else %}hover:text-white hover:bg-[#2c2c35]{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Approvals
+                    {% if pending_count > 0 %}
+                        <span class="ml-auto bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                            {{ pending_count }}
+                        </span>
+                    {% endif %}
                 </a>
 
                 <a href="{% url 'class_group' %}" 

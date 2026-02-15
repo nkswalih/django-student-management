@@ -1,34 +1,72 @@
-    {% extends 'school/base.html' %}
+{% extends 'school/base.html' %}
 
-    {% block header_title %}My Learning{% endblock %}
+{% block header_title %}My Learning{% endblock %}
 
-    {% block content %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Example Active Course -->
-        <div class="glass-card p-6">
-            <div class="flex justify-between mb-4">
-                <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    {% for enrollment in enrollments %}
+    <div class="glass-card overflow-hidden {% if enrollment.status == 'pending' %}opacity-75{% endif %}">
+
+        <!-- Banner -->
+        <div class="h-32 w-full relative">
+            {% if enrollment.course.image %}
+                <img src="{{ enrollment.course.image.url }}" class="w-full h-full object-cover">
+            {% else %}
+                <div class="w-full h-full bg-gradient-to-br from-indigo-400 to-brand flex items-center justify-center">
+                    <span class="text-white font-bold text-2xl opacity-40">{{ enrollment.course.course_name|slice:":2" }}</span>
                 </div>
-                <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded h-fit">Active</span>
-            </div>
-            <h3 class="font-bold text-lg">Chemistry Basics</h3>
-            <div class="w-full bg-slate-100 h-2 rounded-full mt-4 mb-2">
-                <div class="bg-green-500 h-2 rounded-full" style="width: 60%"></div>
-            </div>
-            <p class="text-xs text-slate-400">60% Complete</p>
+            {% endif %}
+
+            <!-- Status Badge -->
+            <span class="absolute top-3 right-3 text-[10px] font-bold px-2 py-1 rounded-full
+                {% if enrollment.status == 'approved' %}bg-green-500 text-white
+                {% elif enrollment.status == 'pending' %}bg-yellow-400 text-white
+                {% else %}bg-red-500 text-white{% endif %}">
+                {{ enrollment.status|capfirst }}
+            </span>
         </div>
-        
-        <!-- Example Pending Course -->
-        <div class="glass-card p-6 opacity-75">
-            <div class="flex justify-between mb-4">
-                <div class="w-10 h-10 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+
+        <div class="p-5">
+            <span class="text-slate-400 text-[10px] font-mono">{{ enrollment.course.course_id }}</span>
+            <h3 class="font-bold text-lg text-slate-900 mt-1">{{ enrollment.course.course_name }}</h3>
+
+            {% if enrollment.status == 'approved' %}
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-100 h-2 rounded-full mt-4 mb-1">
+                    <div class="bg-brand h-2 rounded-full transition-all"
+                         style="width: {{ enrollment.progress }}%"></div>
                 </div>
-                <span class="text-xs font-bold text-brand bg-indigo-50 px-2 py-1 rounded h-fit">Approved</span>
-            </div>
-            <h3 class="font-bold text-lg">English Literature</h3>
-            <p class="text-xs text-slate-400 mt-4">Waiting to start</p>
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-xs text-slate-400">{{ enrollment.progress }}% Complete</p>
+                    <p class="text-xs text-slate-400">{{ enrollment.course.department }}</p>
+                </div>
+
+                <a href="{% url 'student_view_course' enrollment.course.id %}"
+                   class="block w-full text-center bg-brand text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition">
+                    Continue Learning 
+                </a>
+
+            {% elif enrollment.status == 'pending' %}
+                <p class="text-xs text-yellow-600 bg-yellow-50 px-3 py-2 rounded-lg mt-4 font-medium">
+                    ⏳ Awaiting principal approval
+                </p>
+
+            {% else %}
+                <p class="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg mt-4 font-medium">
+                    ❌ Enrollment rejected. Contact principal.
+                </p>
+            {% endif %}
         </div>
     </div>
-    {% endblock %}
+    {% empty %}
+        <div class="col-span-3 text-center py-20 text-slate-400">
+            <p class="text-lg font-semibold">No courses yet.</p>
+            <a href="{% url 'purchase_course' %}" class="text-brand text-sm font-semibold hover:underline mt-2 inline-block">
+                Browse available courses →
+            </a>
+        </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

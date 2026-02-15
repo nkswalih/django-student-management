@@ -1,34 +1,100 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
+from principal.models import Course, Enrollment, Note
 
 # Create your views here.
 def home(request):
     return render(request, 'school/home.html')
 
-@login_required
+
 @role_required('Student')
 def dashboard(request):
     return render(request, 'school/dashboard.html')
 
-@login_required
+
 @role_required('Student')
 def my_courses(request):
-    return render(request, 'school/my_courses.html')
+    # Get all enrollments for this student
+    enrollments = Enrollment.objects.filter(
+        student=request.user
+    ).select_related('course').order_by('-enrolled_at')
 
-@login_required
+    context = {
+        'enrollments': enrollments,
+    }
+    return render(request, 'school/my_courses.html', context)
+
+
 @role_required('Student')
 def purchase_course(request):
-    return render(request, 'school/purchase.html')
+    # Get all active courses
+    all_courses = Course.objects.filter(is_active=True)
 
-@login_required
+    # Get courses this student already enrolled in
+    enrolled_course_ids = Enrollment.objects.filter(
+        student=request.user
+    ).values_list('course_id', flat=True)
+
+    if request.method == 'POST':
+        course_id = request.POST.get('course_id')
+        course = get_object_or_404(Course, id=course_id)
+
+        # Check if already enrolled
+        if Enrollment.objects.filter(student=request.user, course=course).exists():
+            messages.warning(request, "You already purchased this course.")
+        else:
+            Enrollment.objects.create(
+                student=request.user,
+                course=course,
+                status='pending'
+            )
+            messages.success(request, f"Purchase request for '{course.course_name}' sent! Awaiting approval.")
+
+        return redirect('purchase_course')
+
+    context = {
+        'courses': all_courses,
+        'enrolled_ids': list(enrolled_course_ids),
+    }
+    return render(request, 'school/purchase.html', context)
+
+
+@role_required('Student')
+def view_course(request, pk):
+    enrollment = get_object_or_404(
+        Enrollment,
+        course__id=pk,
+        student=request.user,
+        # status='approved'
+    )
+
+    if enrollment.status == 'pending':
+        messages.warning(request, "This course is still awaiting approval.")
+        return redirect('my_courses')
+
+    if enrollment.status == 'rejected':
+        messages.error(request, "Your enrollment was rejected.")
+        return redirect('my_courses')
+
+    course = enrollment.course
+    notes = course.notes.all().order_by('-uploaded_at')
+
+    context = {
+        'course': course,
+        'enrollment': enrollment,
+        'notes': notes,
+    }
+    return render(request, 'school/view_course.html', context)
+
+
 @role_required('Student')
 def class_group(request):
     return render(request, 'school/class_group.html')
 
-@login_required
+
 @role_required('Student')
 def student_profile(request):
     if request.method == 'POST':
@@ -56,7 +122,7 @@ def student_profile(request):
                 messages.error(request, "Passwords do not match.")
                 return redirect('student_profile')
             user.set_password(new_password)
-            update_session_auth_hash(request, user)  # Keep user logged in
+            update_session_auth_hash(request, user)
 
         user.save()
         messages.success(request, "Profile updated successfully!")
