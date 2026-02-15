@@ -3,7 +3,8 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
-from principal.models import Course, Enrollment, Note
+from principal.models import Course, Enrollment, Note, Homework, VoiceSubmission
+from datetime import date
 
 # Create your views here.
 def home(request):
@@ -12,7 +13,37 @@ def home(request):
 
 @role_required('Student')
 def dashboard(request):
-    return render(request, 'school/dashboard.html')
+    from principal.models import Enrollment, Homework
+
+    # Enrollment stats
+    enrollments = Enrollment.objects.filter(student=request.user)
+    approved = enrollments.filter(status='approved').count()
+    pending = enrollments.filter(status='pending').count()
+    rejected = enrollments.filter(status='rejected').count()
+
+    # Total spend
+    total_spend = sum(
+        e.course.price for e in enrollments.filter(status='approved')
+    )
+
+    # Homework from approved courses
+    approved_course_ids = enrollments.filter(
+        status='approved'
+    ).values_list('course_id', flat=True)
+
+    homeworks = Homework.objects.filter(
+        course__id__in=approved_course_ids
+    ).select_related('course').order_by('due_date')[:5]
+
+    context = {
+        'approved': approved,
+        'pending': pending,
+        'rejected': rejected,
+        'total_spend': total_spend,
+        'homeworks': homeworks,
+        'today': date.today(),
+    }
+    return render(request, 'school/dashboard.html', context)
 
 
 @role_required('Student')
@@ -89,6 +120,43 @@ def view_course(request, pk):
     }
     return render(request, 'school/view_course.html', context)
 
+
+@role_required('Student')
+def submit_voice(request):
+    if request.method == 'POST':
+        homework_id = request.POST.get('homework_id')
+        audio_file = request.FILES.get('audio_file')
+
+        if not homework_id or not audio_file:
+            messages.error(request, "Missing homework or audio file.")
+            return redirect('student_dashboard')
+
+        homework = get_object_or_404(Homework, id=homework_id)
+
+        # Check if already submitted
+        existing = VoiceSubmission.objects.filter(
+            homework=homework,
+            student=request.user
+        ).first()
+
+        if existing:
+            # Update existing submission
+            existing.audio_file.delete()
+            existing.audio_file = audio_file
+            existing.is_reviewed = False
+            existing.save()
+            messages.success(request, "Voice submission updated.")
+        else:
+            VoiceSubmission.objects.create(
+                homework=homework,
+                student=request.user,
+                audio_file=audio_file
+            )
+            messages.success(request, "Voice submitted to teacher.")
+
+        return redirect('student_dashboard')
+
+    return redirect('student_dashboard')
 
 @role_required('Student')
 def class_group(request):

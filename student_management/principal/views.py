@@ -9,7 +9,7 @@ from .models import Course
 from .forms import CourseForm, UserEditForm, EditUsersForm
 from accounts.models import Student
 from django.contrib.auth.models import Group
-from principal.models import Enrollment
+from principal.models import Course, Note, Homework, VoiceSubmission, Enrollment
 
 # Create your views here.
 User = get_user_model()
@@ -185,11 +185,89 @@ def course_approvals(request):
 # ---------Teacher---------
 @role_required('Teacher')
 def teacher_dashboard(request):
-    return render(request, 'teacher/teacher_dashboard.html')
+    from principal.models import Homework, Enrollment, VoiceSubmission
+
+    # All courses — teacher can see all active courses
+    my_courses = Course.objects.filter(is_active=True)
+    course_ids = my_courses.values_list('id', flat=True)
+
+    # This teacher's homeworks
+    homeworks = Homework.objects.filter(
+        teacher=request.user
+    ).select_related('course').order_by('-created_at')
+
+    # Voice submissions pending review
+    pending_voices = VoiceSubmission.objects.filter(
+        homework__teacher=request.user,
+        is_reviewed=False
+    ).select_related('student', 'homework')
+
+    # Total enrolled students across all courses
+    total_students = Enrollment.objects.filter(
+        course__in=course_ids,
+        status='approved'
+    ).values('student').distinct().count()
+
+    # Reviewed vs total voice submissions
+    total_voices = VoiceSubmission.objects.filter(
+        homework__teacher=request.user
+    ).count()
+    reviewed_voices = VoiceSubmission.objects.filter(
+        homework__teacher=request.user,
+        is_reviewed=True
+    ).count()
+
+    context = {
+        'my_courses': my_courses,
+        'homeworks': homeworks[:5],
+        'pending_voices': pending_voices[:5],
+        'total_students': total_students,
+        'total_courses': my_courses.count(),
+        'total_homeworks': homeworks.count(),
+        'pending_voice_count': pending_voices.count(),
+        'reviewed_voices': reviewed_voices,
+        'total_voices': total_voices,
+    }
+    return render(request, 'teacher/teacher_dashboard.html', context)
+
+def manage_notes(request):
+    my_courses = Course.objects.filter(is_active=True)
+    notes = Note.objects.filter(
+        uploaded_by=request.user
+    ).select_related('course').order_by('-uploaded_at')
+
+    if request.method == 'POST':
+        course_id = request.POST.get('course_id')
+        title = request.POST.get('title')
+        pdf_file = request.FILES.get('pdf_file')
+
+        if not all([course_id, title, pdf_file]):
+            messages.error(request, "All fields are required.")
+            return redirect('manage_notes')
+
+        course = get_object_or_404(Course, id=course_id)
+        Note.objects.create(
+            course=course,
+            title=title,
+            pdf_file=pdf_file,
+            uploaded_by=request.user
+        )
+        messages.success(request, f"Note '{title}' uploaded successfully.")
+        return redirect('manage_notes')
+
+    return render(request, 'teacher/manage_notes.html', {
+        'my_courses': my_courses,
+        'notes': notes,
+    })
+
 
 @role_required('Teacher')
-def manage_notes(request):
-    return render(request, 'teacher/manage_notes.html')
+def delete_note(request, pk):
+    note = get_object_or_404(Note, pk=pk, uploaded_by=request.user)
+    note.pdf_file.delete()  # delete file from storage
+    note.delete()
+    messages.success(request, "Note deleted.")
+    return redirect('manage_notes')
 
 @role_required('Teacher')
 def student_list(request):
@@ -197,7 +275,44 @@ def student_list(request):
 
 @role_required('Teacher')
 def assign_homework(request):
-    return render(request, 'teacher/assign_homework.html')
+    # ✅ Show ALL active courses
+    my_courses = Course.objects.filter(is_active=True)
+    homeworks = Homework.objects.filter(
+        teacher=request.user
+    ).select_related('course').order_by('-created_at')
+
+    if request.method == 'POST':
+        course_id = request.POST.get('course_id')   # ✅ match form field name
+        title = request.POST.get('title')
+        instructions = request.POST.get('instructions')
+        due_date = request.POST.get('due_date')
+
+        if not all([course_id, title, instructions, due_date]):
+            messages.error(request, "All fields are required.")
+            return redirect('assign_homework')
+
+        course = get_object_or_404(Course, id=course_id)
+        Homework.objects.create(
+            course=course,
+            teacher=request.user,
+            title=title,
+            instructions=instructions,
+            due_date=due_date
+        )
+        messages.success(request, f"Homework '{title}' assigned.")
+        return redirect('assign_homework')
+
+    return render(request, 'teacher/assign_homework.html', {
+        'my_courses': my_courses,
+        'homeworks': homeworks,
+    })
+
+@role_required('Teacher')
+def delete_homework(request, pk):
+    hw = get_object_or_404(Homework, pk=pk, teacher=request.user)
+    hw.delete()
+    messages.success(request, "Homework deleted.")
+    return redirect('assign_homework')
 
 @role_required('Teacher')
 def teacher_profile(request):
@@ -206,3 +321,21 @@ def teacher_profile(request):
 @role_required('Teacher')
 def teacher_groups(request):
     return render(request, 'teacher/teacher_groups.html')
+
+@role_required('Teacher')
+def review_voices(request):
+    # All voice submissions for this teacher's homeworks
+    submissions = VoiceSubmission.objects.filter(
+        homework__teacher=request.user
+    ).select_related('student', 'homework').order_by('-submitted_at')
+
+    if request.method == 'POST':
+        submission_id = request.POST.get('submission_id')
+        submission = get_object_or_404(VoiceSubmission, pk=submission_id)
+        submission.is_reviewed = True
+        submission.save()
+        messages.success(request, "Marked as reviewed.")
+        return redirect('review_voices')
+
+    context = {'submissions': submissions}
+    return render(request, 'teacher/review_voices.html', context)

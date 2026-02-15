@@ -9,5 +9,6 @@ urlpatterns = [
     path('dashboard/purchase/', views.purchase_course, name='purchase_course'),
     path('dashboard/class-group/', views.class_group, name='class_group'),
     path('dashboard/profile/', views.student_profile, name='student_profile'),
+    path('dashboard/submit-voice/', views.submit_voice, name='submit_voice'),
     path('old/', views.old, name='student_old'),
 ]
