@@ -1,33 +1,128 @@
 {% extends 'teacher/base_teacher.html' %}
 
-{% block header_title %}Teacher Profile{% endblock %}
+{% block header_title %}My Profile{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto glass-card p-8">
-    <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
-        <div class="relative group">
-            <div class="w-24 h-24 rounded-full bg-brand flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-lg">M</div>
-            <button class="absolute bottom-0 right-0 bg-dark text-white p-2 rounded-full shadow-md"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-        </div>
-        <div class="flex-1 w-full space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase">Full Name</label>
-                    <input type="text" value="Mr. John Teacher" class="w-full mt-1 px-4 py-2 rounded-xl bg-slate-50 border-none focus:ring-brand">
+<div class="max-w-3xl mx-auto space-y-6">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-3
+                {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-100
+                {% else %}bg-red-50 text-red-700 border border-red-100{% endif %}">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="glass-card p-8">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+
+                <!-- Profile Picture -->
+                <div class="flex flex-col items-center gap-3 flex-shrink-0">
+                    <div class="relative group">
+                        {% if request.user.profile_picture %}
+                            <img src="{{ request.user.profile_picture.url }}"
+                                 class="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-lg">
+                        {% else %}
+                            <div class="w-24 h-24 rounded-2xl bg-brand flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-lg">
+                                {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Upload overlay -->
+                        <label for="profile_picture"
+                               class="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </label>
+                        <input type="file" id="profile_picture" name="profile_picture"
+                               accept="image/*" class="hidden">
+                    </div>
+                    <p class="text-xs text-slate-400 text-center">Hover to change photo</p>
                 </div>
-                <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase">Subject</label>
-                    <input type="text" value="Mathematics" class="w-full mt-1 px-4 py-2 rounded-xl bg-slate-50 border-none focus:ring-brand">
+
+                <!-- Form Fields -->
+                <div class="flex-1 w-full space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase block mb-1">First Name</label>
+                            <input type="text" name="first_name"
+                                   value="{{ request.user.first_name }}"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Last Name</label>
+                            <input type="text" name="last_name"
+                                   value="{{ request.user.last_name }}"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Email</label>
+                        <input type="email" name="email"
+                               value="{{ request.user.email }}"
+                               class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm text-slate-800 font-medium">
+                    </div>
+
+                    <!-- Password Section -->
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase mb-3">Change Password</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 block mb-1">New Password</label>
+                                <input type="password" name="new_password"
+                                       placeholder="Leave blank to keep current"
+                                       class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 block mb-1">Confirm Password</label>
+                                <input type="password" name="confirm_password"
+                                       placeholder="Repeat new password"
+                                       class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-brand text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Info (read-only) -->
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase mb-3">Account Info</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-slate-50 rounded-xl px-4 py-3">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold">Username</p>
+                                <p class="text-sm font-semibold text-slate-700 mt-0.5">{{ request.user.username }}</p>
+                            </div>
+                            <div class="bg-slate-50 rounded-xl px-4 py-3">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold">Member Since</p>
+                                <p class="text-sm font-semibold text-slate-700 mt-0.5">
+                                    {{ request.user.date_joined|date:"d M Y" }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="flex justify-end pt-2">
+                        <button type="submit"
+                                class="flex items-center gap-2 bg-brand text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Update Profile
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div>
-                 <label class="text-xs font-bold text-slate-500 uppercase">Email</label>
-                 <input type="email" value="teacher@school.com" class="w-full mt-1 px-4 py-2 rounded-xl bg-slate-50 border-none focus:ring-brand">
-            </div>
-            <div class="flex justify-end pt-4 mt-6 border-t border-slate-100">
-                <button class="bg-brand text-white px-6 py-2.5 rounded-xl font-medium shadow-lg hover:bg-indigo-700">Update Profile</button>
-            </div>
         </div>
-    </div>
+    </form>
 </div>
 {% endblock %}

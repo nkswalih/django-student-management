@@ -3,6 +3,58 @@
 {% block header_title %}Class Groups{% endblock %}
 
 {% block content %}
+<!-- 🚧 Under Construction Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center"
+     style="backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); background: rgba(255,255,255,0.6);">
+
+    <div class="text-center px-8 py-10 rounded-3xl border border-slate-100 shadow-2xl shadow-slate-200"
+         style="background: rgba(255,255,255,0.85);">
+
+        <!-- Animated icon -->
+        <div class="relative w-20 h-20 mx-auto mb-6">
+            <div class="absolute inset-0 rounded-full bg-brand/10 animate-ping"></div>
+            <div class="relative w-20 h-20 rounded-full bg-brandLight flex items-center justify-center">
+                <svg class="w-9 h-9 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+                </svg>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">Under Construction</h2>
+        <p class="text-slate-400 text-sm max-w-xs mx-auto mb-8">
+            This page is currently being built. Check back soon!
+        </p>
+
+        <!-- Progress bar -->
+        <div class="w-64 mx-auto mb-6">
+            <div class="flex justify-between text-xs text-slate-400 mb-2">
+                <span>Progress</span>
+                <span>65%</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div class="h-2 bg-brand rounded-full" style="width: 65%;
+                     animation: progress-load 2s ease-out forwards;"></div>
+            </div>
+        </div>
+
+        <!-- Back button -->
+        <a href="javascript:history.back()"
+           class="inline-flex items-center gap-2 bg-brand text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Go Back
+        </a>
+    </div>
+</div>
+
+<style>
+    @keyframes progress-load {
+        from { width: 0%; }
+        to   { width: 65%; }
+    }
+</style>
 <div class="glass-card p-6">
     <div class="space-y-4">
          <div class="flex items-center gap-4 p-4 border border-slate-50 rounded-2xl hover:bg-slate-50 transition">

@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
 from principal.models import Course, Enrollment, Note, Homework, VoiceSubmission
 from datetime import date
+from django.db import models
 
 # Create your views here.
 def home(request):
@@ -197,6 +198,51 @@ def student_profile(request):
         return redirect('student_profile')
 
     return render(request, 'school/profile.html')
+
+@role_required('Student')
+def search(request):
+    from principal.models import Course, Homework, Enrollment
+
+    query = request.GET.get('q', '').strip()
+    results = {
+        'courses': [],
+        'homeworks': [],
+        'query': query,
+    }
+
+    if query:
+        # Search courses student is enrolled in
+        enrolled_course_ids = Enrollment.objects.filter(
+            student=request.user
+        ).values_list('course_id', flat=True)
+
+        results['courses'] = Course.objects.filter(
+            id__in=enrolled_course_ids
+        ).filter(
+            models.Q(course_name__icontains=query) |
+            models.Q(course_id__icontains=query) |
+            models.Q(department__icontains=query) |
+            models.Q(description__icontains=query)
+        )
+
+        # Search homework
+        results['homeworks'] = Homework.objects.filter(
+            course__id__in=enrolled_course_ids
+        ).filter(
+            models.Q(title__icontains=query) |
+            models.Q(instructions__icontains=query)
+        )
+
+        # All available courses (shop)
+        results['available_courses'] = Course.objects.filter(
+            is_active=True
+        ).filter(
+            models.Q(course_name__icontains=query) |
+            models.Q(course_id__icontains=query) |
+            models.Q(department__icontains=query)
+        ).exclude(id__in=enrolled_course_ids)
+
+    return render(request, 'school/student_search.html', results)
 
 def old(request):
     return render(request, 'school/old.html')

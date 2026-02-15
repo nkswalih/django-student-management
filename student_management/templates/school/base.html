@@ -141,9 +141,65 @@
                 <p class="text-slate-500 text-sm">Welcome back, {{ user.first_name }}!</p>
             </div>
             <div class="flex items-center gap-4">
-                <div class="relative hidden md:block">
-                    <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2.5 rounded-full bg-white border-none shadow-sm text-sm w-64 focus:ring-2 focus:ring-brand">
-                    <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <!-- Search bar -->
+                <div class="relative hidden md:block" x-data="{ open: false, query: '' }">
+                    <form method="GET" action="{% url 'student_search' %}" id="searchForm">
+                        <input type="text"
+                            name="q"
+                            x-model="query"
+                            @focus="open = true"
+                            @keydown.escape="open = false"
+                            @input="open = query.length > 0"
+                            placeholder="Search courses, homework..."
+                            class="pl-10 pr-4 py-2.5 rounded-full bg-white border-none shadow-sm text-sm w-64 focus:ring-2 focus:ring-brand focus:w-80 transition-all duration-300">
+                        <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400 pointer-events-none"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </form>
+
+                    <!-- Live dropdown -->
+                    <div x-show="open && query.length > 0"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 translate-y-1"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        @click.outside="open = false"
+                        class="absolute top-12 left-0 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+
+                        <div class="p-3 border-b border-slate-50 flex items-center justify-between">
+                            <p class="text-xs font-bold text-slate-400 uppercase">Quick Search</p>
+                            <button @click="open = false; query = ''"
+                                    class="text-slate-300 hover:text-slate-500 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="p-2">
+                            <p class="text-xs text-slate-400 px-3 py-2">
+                                Press <kbd class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-mono">Enter</kbd>
+                                to see all results for
+                                <span class="font-semibold text-brand" x-text="`"${query}"`"></span>
+                            </p>
+
+                            <!-- Quick links -->
+                            <div class="mt-1 space-y-1">
+                                <a :href="`{% url 'student_search' %}?q=${encodeURIComponent(query)}`"
+                                class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-brandLight group transition">
+                                    <div class="w-8 h-8 bg-brandLight text-brand rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand group-hover:text-white transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-slate-700 group-hover:text-brand" x-text="`Search for "${query}"`"></p>
+                                        <p class="text-xs text-slate-400">Courses, homework & more</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm relative">
                     <span class="w-2 h-2 bg-red-500 rounded-full absolute top-2 right-2 border-2 border-white"></span>

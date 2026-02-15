@@ -271,7 +271,77 @@ def delete_note(request, pk):
 
 @role_required('Teacher')
 def student_list(request):
-    return render(request, 'teacher/student_list.html')
+    from principal.models import Enrollment, VoiceSubmission
+
+    # Get all students enrolled in any course
+    enrollments = Enrollment.objects.filter(
+        status='approved'
+    ).select_related('student', 'course').order_by('student__first_name')
+
+    # Build student data with their latest voice submission
+    student_data = []
+    seen = set()
+
+    for enrollment in enrollments:
+        student = enrollment.student
+        if student.id in seen:
+            continue
+        seen.add(student.id)
+
+        # Get all voice submissions for this student
+        voices = VoiceSubmission.objects.filter(
+            student=student
+        ).select_related('homework', 'homework__course').order_by('-submitted_at')
+
+        student_data.append({
+            'student': student,
+            'latest_voice': voices.first(),
+            'voice_count': voices.count(),
+            'unreviewed': voices.filter(is_reviewed=False).count(),
+        })
+
+    context = {
+        'student_data': student_data,
+    }
+    return render(request, 'teacher/student_list.html', context)
+
+@role_required('Teacher')
+def student_detail(request, pk):
+    from principal.models import VoiceSubmission, Enrollment
+    from accounts.models import Student
+
+    student = get_object_or_404(Student, pk=pk)
+
+    # All voice submissions for this student
+    submissions = VoiceSubmission.objects.filter(
+        student=student
+    ).select_related('homework', 'homework__course').order_by('-submitted_at')
+
+    # Mark as reviewed via POST
+    if request.method == 'POST':
+        submission_id = request.POST.get('submission_id')
+        if submission_id:
+            sub = get_object_or_404(VoiceSubmission, pk=submission_id, student=student)
+            sub.is_reviewed = True
+            sub.save()
+            messages.success(request, "Marked as reviewed.")
+            return redirect('student_detail', pk=pk)
+
+    # Enrollment info
+    enrollments = Enrollment.objects.filter(
+        student=student,
+        status='approved'
+    ).select_related('course')
+
+    context = {
+        'student': student,
+        'submissions': submissions,
+        'enrollments': enrollments,
+        'total_submissions': submissions.count(),
+        'reviewed_count': submissions.filter(is_reviewed=True).count(),
+        'pending_count': submissions.filter(is_reviewed=False).count(),
+    }
+    return render(request, 'teacher/student_detail.html', context)
 
 @role_required('Teacher')
 def assign_homework(request):
@@ -316,6 +386,37 @@ def delete_homework(request, pk):
 
 @role_required('Teacher')
 def teacher_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+
+        new_email = request.POST.get('email', '').strip()
+        if new_email and new_email != user.email:
+            from accounts.models import Student
+            if Student.objects.filter(email=new_email).exclude(pk=user.pk).exists():
+                messages.error(request, "Email already in use.")
+                return redirect('teacher_profile')
+            user.email = new_email
+            user.username = new_email.split('@')[0]
+
+        if 'profile_picture' in request.FILES:
+            user.profile_picture = request.FILES['profile_picture']
+
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+        if new_password:
+            if new_password != confirm_password:
+                messages.error(request, "Passwords do not match.")
+                return redirect('teacher_profile')
+            user.set_password(new_password)
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, user)
+
+        user.save()
+        messages.success(request, "Profile updated successfully!")
+        return redirect('teacher_profile')
+
     return render(request, 'teacher/teacher_profile.html')
 
 @role_required('Teacher')

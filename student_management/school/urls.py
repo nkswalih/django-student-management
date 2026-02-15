@@ -10,5 +10,6 @@ urlpatterns = [
     path('dashboard/class-group/', views.class_group, name='class_group'),
     path('dashboard/profile/', views.student_profile, name='student_profile'),
     path('dashboard/submit-voice/', views.submit_voice, name='submit_voice'),
+    path('search/', views.search, name='student_search'),
     path('old/', views.old, name='student_old'),
 ]

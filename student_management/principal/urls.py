@@ -16,6 +16,7 @@ urlpatterns = [
     path('manage-notes/', views.manage_notes, name='manage_notes'),
     path('teacher/delete-note/<int:pk>/', views.delete_note, name='delete_note'),
     path('student-list/', views.student_list, name='student_list'),
+    path('student-list/<int:pk>/', views.student_detail, name='student_detail'),
     path('assign-homework/', views.assign_homework, name='assign_homework'),
     path('assign-homework/delete/<int:pk>/', views.delete_homework, name='delete_homework'),
     path('teacher-profile/', views.teacher_profile, name='teacher_profile'),
