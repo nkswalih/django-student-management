@@ -63,9 +63,9 @@ class Student(AbstractUser):
     email = models.EmailField(unique=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']  # reg_number removed — not needed for superuser
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
-    # Attach custom manager
+    # Attached a custom manager
     objects = StudentManager()
 
     def save(self, *args, **kwargs):

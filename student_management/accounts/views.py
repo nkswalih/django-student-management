@@ -4,6 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import RegisterForm
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 def registration(request):
@@ -13,6 +15,19 @@ def registration(request):
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
+
+            # Smtp Welcome Email
+            try:
+                send_mail(
+                    subject='Welcome to Student Management System 🎓',
+                    message=f'Hi {user.first_name},\n\nYour account has been successfully created.\n\nLogin and start learning!',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print(f"Email failed: {e}")
+
             group, _ = Group.objects.get_or_create(name='Student')
             user.groups.add(group)
             messages.success(request, "Registration successful! You can now login.")

@@ -14,7 +14,6 @@ def home(request):
 
 @role_required('Student')
 def dashboard(request):
-    from principal.models import Enrollment, Homework
 
     # Enrollment stats
     enrollments = Enrollment.objects.filter(student=request.user)
@@ -49,7 +48,7 @@ def dashboard(request):
 
 @role_required('Student')
 def my_courses(request):
-    # Get all enrollments for this student
+    
     enrollments = Enrollment.objects.filter(
         student=request.user
     ).select_related('course').order_by('-enrolled_at')
@@ -62,10 +61,10 @@ def my_courses(request):
 
 @role_required('Student')
 def purchase_course(request):
-    # Get all active courses
+
     all_courses = Course.objects.filter(is_active=True)
 
-    # Get courses this student already enrolled in
+    # Get all course IDs where the currently logged-in user is enrolled.
     enrolled_course_ids = Enrollment.objects.filter(
         student=request.user
     ).values_list('course_id', flat=True)

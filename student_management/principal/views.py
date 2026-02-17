@@ -32,10 +32,6 @@ def principal_dashboard(request):
         Student.objects.filter(department=dept).count()
         for dept in dept_labels
     ]
-
-    # Pending course requests (if you have CourseRequest model)
-    # pending_requests = CourseRequest.objects.filter(status='pending').count()
-    # For now use 0 if model doesn't exist yet
     pending_requests = 0
 
     # Recent students (last 5 registered)
@@ -208,7 +204,7 @@ def teacher_dashboard(request):
         status='approved'
     ).values('student').distinct().count()
 
-    # Reviewed vs total voice submissions
+    # Reviewed and total voice submissions
     total_voices = VoiceSubmission.objects.filter(
         homework__teacher=request.user
     ).count()
@@ -264,7 +260,7 @@ def manage_notes(request):
 @role_required('Teacher')
 def delete_note(request, pk):
     note = get_object_or_404(Note, pk=pk, uploaded_by=request.user)
-    note.pdf_file.delete()  # delete file from storage
+    note.pdf_file.delete()
     note.delete()
     messages.success(request, "Note deleted.")
     return redirect('manage_notes')
@@ -288,7 +284,7 @@ def student_list(request):
             continue
         seen.add(student.id)
 
-        # Get all voice submissions for this student
+        # Get all voice submissions from students
         voices = VoiceSubmission.objects.filter(
             student=student
         ).select_related('homework', 'homework__course').order_by('-submitted_at')
@@ -312,12 +308,10 @@ def student_detail(request, pk):
 
     student = get_object_or_404(Student, pk=pk)
 
-    # All voice submissions for this student
     submissions = VoiceSubmission.objects.filter(
         student=student
     ).select_related('homework', 'homework__course').order_by('-submitted_at')
 
-    # Mark as reviewed via POST
     if request.method == 'POST':
         submission_id = request.POST.get('submission_id')
         if submission_id:
@@ -345,14 +339,14 @@ def student_detail(request, pk):
 
 @role_required('Teacher')
 def assign_homework(request):
-    # ✅ Show ALL active courses
+
     my_courses = Course.objects.filter(is_active=True)
     homeworks = Homework.objects.filter(
         teacher=request.user
     ).select_related('course').order_by('-created_at')
 
     if request.method == 'POST':
-        course_id = request.POST.get('course_id')   # ✅ match form field name
+        course_id = request.POST.get('course_id')
         title = request.POST.get('title')
         instructions = request.POST.get('instructions')
         due_date = request.POST.get('due_date')
@@ -425,7 +419,7 @@ def teacher_groups(request):
 
 @role_required('Teacher')
 def review_voices(request):
-    # All voice submissions for this teacher's homeworks
+    
     submissions = VoiceSubmission.objects.filter(
         homework__teacher=request.user
     ).select_related('student', 'homework').order_by('-submitted_at')
