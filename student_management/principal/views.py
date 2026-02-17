@@ -8,7 +8,6 @@ from django.contrib.auth.models import Group
 from .models import Course
 from .forms import CourseForm, UserEditForm, EditUsersForm
 from accounts.models import Student
-from django.contrib.auth.models import Group
 from principal.models import Course, Note, Homework, VoiceSubmission, Enrollment
 
 # Create your views here.
@@ -32,7 +31,7 @@ def principal_dashboard(request):
         Student.objects.filter(department=dept).count()
         for dept in dept_labels
     ]
-    pending_requests = 0
+    # pending_requests = 
 
     # Recent students (last 5 registered)
     recent_students = Student.objects.filter(
@@ -44,7 +43,7 @@ def principal_dashboard(request):
         'total_teachers':  total_teachers,
         'total_courses':   total_courses,
         'active_courses':  active_courses,
-        'pending_requests': pending_requests,
+        # 'pending_requests': pending_requests,
         'dept_labels':     dept_labels,
         'dept_counts':     dept_counts,
         'recent_students': recent_students,
@@ -146,7 +145,6 @@ def edit_user(request, pk):
 
 @role_required('Principal')
 def course_approvals(request):
-    from principal.models import Enrollment
 
     pending = Enrollment.objects.filter(
         status='pending'
@@ -181,13 +179,11 @@ def course_approvals(request):
 # ---------Teacher---------
 @role_required('Teacher')
 def teacher_dashboard(request):
-    from principal.models import Homework, Enrollment, VoiceSubmission
 
     # All courses — teacher can see all active courses
     my_courses = Course.objects.filter(is_active=True)
     course_ids = my_courses.values_list('id', flat=True)
 
-    # This teacher's homeworks
     homeworks = Homework.objects.filter(
         teacher=request.user
     ).select_related('course').order_by('-created_at')
@@ -267,7 +263,6 @@ def delete_note(request, pk):
 
 @role_required('Teacher')
 def student_list(request):
-    from principal.models import Enrollment, VoiceSubmission
 
     # Get all students enrolled in any course
     enrollments = Enrollment.objects.filter(
@@ -303,8 +298,6 @@ def student_list(request):
 
 @role_required('Teacher')
 def student_detail(request, pk):
-    from principal.models import VoiceSubmission, Enrollment
-    from accounts.models import Student
 
     student = get_object_or_404(Student, pk=pk)
 

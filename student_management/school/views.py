@@ -200,7 +200,6 @@ def student_profile(request):
 
 @role_required('Student')
 def search(request):
-    from principal.models import Course, Homework, Enrollment
 
     query = request.GET.get('q', '').strip()
     results = {
