@@ -1,6 +1,4 @@
 from django.shortcuts import redirect
-from django.urls import resolve
-from django.http import Http404
 
 class RoleBasedRedirectMiddleware:
 
@@ -9,11 +7,14 @@ class RoleBasedRedirectMiddleware:
 
     def __call__(self, request):
 
-        try:
-            resolve(request.path)
-        except Http404:
+        # Allow admin always
+        if request.path.startswith('/admin'):
+            return self.get_response(request)
 
-            if request.user.is_authenticated:
+        if request.user.is_authenticated:
+
+            # If user visits login page after login
+            if request.path == '/accounts/login/':
 
                 if request.user.groups.filter(name='Student').exists():
                     return redirect('student_dashboard')
@@ -23,7 +24,5 @@ class RoleBasedRedirectMiddleware:
 
                 elif request.user.groups.filter(name='Principal').exists():
                     return redirect('principal_dashboard')
-
-            return redirect('login')
 
         return self.get_response(request)
