@@ -85,7 +85,7 @@
             <!-- Profile Snippet -->
             <div class="bg-[#2c2c35] p-4 rounded-2xl mb-8 flex items-center gap-3 border border-[#3a3a45]">
                 {% if user.profile_picture %}
-                    <img src="{{ user.profile_picture.url }}" class="w-10 h-10 rounded-full object-cover border-2 border-brand">
+                    <img src="{{ user.profile_picture }}" class="w-10 h-10 rounded-full object-cover border-2 border-brand">
                 {% else %}
                     <img src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=5b58eb&color=fff&size=128"
                          class="w-10 h-10 rounded-full object-cover border-2 border-brand">

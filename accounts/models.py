@@ -45,7 +45,8 @@ class Student(AbstractUser):
         ('MBA', 'MBA'),
     ]
     # -- Personal Details --
-    profile_picture = models.ImageField(upload_to='students/profile_pics/', blank=True, null=True)
+    # profile_picture = models.ImageField(upload_to='students/profile_pics/', blank=True, null=True)
+    profile_picture = models.CharField(max_length=500, blank=True, null=True)
     phone = models.CharField(max_length=12, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
 

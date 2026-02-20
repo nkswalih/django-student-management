@@ -168,9 +168,19 @@ def student_profile(request):
     if request.method == 'POST':
         user = request.user
 
-        # Update profile picture
+        # Update profile picture - upload directly to Cloudinary
         if 'profile_picture' in request.FILES:
-            user.profile_picture = request.FILES['profile_picture']
+            import cloudinary.uploader
+            file = request.FILES['profile_picture']
+            result = cloudinary.uploader.upload(
+                file,
+                folder='students/profile_pics/',
+                public_id=f'student_{user.pk}',
+                overwrite=True,
+                resource_type='image'
+            )
+            # Save the Cloudinary URL directly to the field
+            user.profile_picture = result['secure_url']
 
         # Update email
         new_email = request.POST.get('email')
