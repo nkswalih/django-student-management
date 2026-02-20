@@ -1,14 +1,14 @@
 {
   "builds": [
     {
-      "src": "student_management/wsgi.py",
+      "src": "student_management/asgi.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "student_management/wsgi.py"
+      "dest": "student_management/asgi.py"
     }
   ]
 }
