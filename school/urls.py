@@ -12,5 +12,4 @@ urlpatterns = [
     path('dashboard/submit-voice/', views.submit_voice, name='submit_voice'),
     path('search/', views.search, name='student_search'),
     path('old/', views.old, name='student_old'),
-    path('debug-env/', views.debug_env),
 ]

@@ -254,14 +254,3 @@ def search(request):
 
 def old(request):
     return render(request, 'school/old.html')
-
-from django.http import JsonResponse
-import os
-
-def debug_env(request):
-    return JsonResponse({
-        'cloud_name': os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT SET'),
-        'api_key': os.environ.get('CLOUDINARY_API_KEY', 'NOT SET'),
-        'secret': 'SET' if os.environ.get('CLOUDINARY_API_SECRET') else 'NOT SET',
-        'storage': 'MediaCloudinaryStorage' if 'cloudinary' in __import__('django.conf', fromlist=['settings']).settings.DEFAULT_FILE_STORAGE else 'FILESYSTEM',
-    })
