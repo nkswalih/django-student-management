@@ -12,6 +12,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from .models import Student
+from threading import Thread
 
 def registration(request):
     if request.method == 'POST':
@@ -22,16 +23,17 @@ def registration(request):
             user.save()
 
             # Smtp Welcome Email
-            try:
-                send_mail(
-                    subject='Welcome to Student Management System 🎓',
-                    message=f'Hi {user.first_name},\n\nYour account has been successfully created.\n\nLogin and start learning!',
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=False,
-                )
-            except Exception as e:
-                print(f"Email failed: {e}")
+            # try:
+            #     send_mail(
+            #         subject='Welcome to Student Management System 🎓',
+            #         message=f'Hi {user.first_name},\n\nYour account has been successfully created.\n\nLogin and start learning!',
+            #         from_email=settings.DEFAULT_FROM_EMAIL,
+            #         recipient_list=[user.email],
+            #         fail_silently=False,
+            #     )
+            # except Exception as e:
+            #     print("Email failed:", e)
+            Thread(target=send_welcome_email, args=(user,)).start()
 
             group, _ = Group.objects.get_or_create(name='Student')
             user.groups.add(group)
@@ -44,6 +46,17 @@ def registration(request):
 
     return render(request, 'accounts/register.html', {'form': form})
 
+def send_welcome_email(user):
+    try:
+        send_mail(
+            subject='Welcome to Student Management System 🎓',
+            message=f'Hi {user.first_name},\n\nYour account has been successfully created.\n\nLogin and start learning!',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        print("Email failed:", e)
 
 def user_login(request):
     if request.method == 'POST':
