@@ -1,6 +1,7 @@
 # Virtual Environment
 djvenv/
 venv/
+env/
 
 # Environment variables
 .env
@@ -9,10 +10,24 @@ venv/
 
 # Django
 *.log
+staticfiles/
+media/
 
 # Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
 
 # Database
 db.sqlite3
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
