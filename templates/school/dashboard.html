@@ -49,9 +49,9 @@
     <!-- 2. MIDDLE SECTION -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- ✅ English Mission Voice Recorder — lg:col-span-2 -->
-        <div class="lg:col-span-2 glass-card p-8 relative overflow-hidden"
-             x-data="{
+        <!-- English Mission Voice Recorder -->
+        <div class="lg:col-span-2 glass-card p-4 sm:p-6 md:p-8 relative overflow-hidden"
+            x-data="{
                 recording: false,
                 playing: false,
                 recorded: false,
@@ -120,13 +120,17 @@
                     }
                 },
 
-                togglePlay() {
+                async togglePlay() {
                     if (!this.audioEl) return;
-                    if (this.playing) {
-                        this.audioEl.pause();
-                    } else {
-                        if (this.audioEl.ended) this.audioEl.currentTime = 0;
-                        this.audioEl.play().catch(err => console.error('Playback error:', err));
+                    try {
+                        if (this.playing) {
+                            this.audioEl.pause();
+                        } else {
+                            if (this.audioEl.ended) this.audioEl.currentTime = 0;
+                            await this.audioEl.play();
+                        }
+                    } catch(err) {
+                        console.error('Playback error:', err);
                     }
                 },
 
@@ -158,147 +162,171 @@
                         alert('Failed to send. Please try again.');
                     }
                 }
-             }">
+            }"
+            x-init="
+                $nextTick(() => {
+                    const btn = document.getElementById('recordBtn');
+                    if (btn) {
+                        btn.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); }, { passive: false });
+                        btn.addEventListener('touchend',   (e) => { e.preventDefault(); stopRecording();  }, { passive: false });
+                    }
+                });
+            ">
 
             {% csrf_token %}
 
-            <div class="flex justify-between items-start relative z-10 gap-6">
+            <div class="relative z-10">
 
-                <!-- Left content -->
-                <div class="flex-1 min-w-0">
-                    <span class="bg-brand text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">
-                        English Mission
-                    </span>
-                    <h2 class="text-xl font-bold text-slate-900 mt-2">Daily Speaking Practice</h2>
-                    <p class="text-slate-500 mt-1 mb-4 text-sm">Record your voice and submit to your teacher.</p>
+                <!-- Top row: title + donut chart -->
+                <div class="flex items-start justify-between gap-3 sm:gap-6 mb-4">
 
-                    <!-- Success toast -->
-                    <div x-show="sent"
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 -translate-y-1"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-200"
-                         x-transition:leave-end="opacity-0"
-                         class="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-xl border border-green-100 flex items-center gap-2">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        Voice submitted successfully!
+                    <!-- Label + title -->
+                    <div class="flex-1 min-w-0">
+                        <span class="bg-brand text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">
+                            English Mission
+                        </span>
+                        <h2 class="text-base sm:text-xl font-bold text-slate-900 mt-2 leading-snug">Daily Speaking Practice</h2>
+                        <p class="text-slate-500 mt-1 text-xs sm:text-sm">Record your voice and submit to your teacher.</p>
                     </div>
 
-                    <!-- Homework selector -->
-                    <div class="mb-4">
-                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Select Homework</label>
-                        <select x-model="selectedHomework"
-                                class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-100 text-sm text-slate-700 focus:ring-2 focus:ring-brand focus:outline-none">
-                            <option value="">-- Choose homework task --</option>
-                            {% for hw in homeworks %}
-                                <option value="{{ hw.id }}">{{ hw.title }} — {{ hw.course.course_name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Timer bar -->
-                    <div class="mb-5">
-                        <div class="flex justify-between text-xs mb-1.5">
-                            <span class="font-mono font-bold"
-                                  :class="recording ? 'text-red-500' : 'text-slate-500'"
-                                  x-text="timeDisplay">00:00</span>
-                            <span class="font-mono text-slate-400">02:00</span>
+                    <!-- Donut chart — scales down on mobile -->
+                    <div class="w-14 h-14 sm:w-20 sm:h-20 md:w-28 md:h-28 relative flex-shrink-0">
+                        <canvas id="englishChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span class="font-bold text-xs sm:text-sm md:text-lg text-slate-700">{{ approved }}</span>
+                            <span class="text-[7px] sm:text-[9px] md:text-[10px] text-slate-400">courses</span>
                         </div>
-                        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                            <div class="h-2.5 rounded-full transition-all duration-1000"
-                                 :class="recording ? 'bg-red-500' : recorded ? 'bg-brand' : 'bg-slate-300'"
-                                 :style="`width: ${progress}%`">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Controls -->
-                    <div class="flex items-center gap-3 flex-wrap">
-
-                        <!-- Hold to Record -->
-                        <template x-if="!recorded">
-                            <button
-                                @mousedown.prevent="startRecording()"
-                                @mouseup.prevent="stopRecording()"
-                                @mouseleave="if(recording) stopRecording()"
-                                @touchstart.prevent="startRecording()"
-                                @touchend.prevent="stopRecording()"
-                                class="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-150 shadow-lg select-none cursor-pointer"
-                                :class="recording
-                                    ? 'bg-red-500 text-white shadow-red-200 scale-95'
-                                    : 'bg-brand text-white shadow-indigo-200 hover:bg-indigo-700'">
-                                <span class="relative flex items-center justify-center w-5 h-5">
-                                    <span x-show="recording"
-                                          class="absolute inset-0 rounded-full bg-red-300 animate-ping opacity-75"></span>
-                                    <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
-                                    </svg>
-                                </span>
-                                <span x-text="recording ? 'Recording... Release to stop' : 'Hold to Record'"></span>
-                            </button>
-                        </template>
-
-                        <!-- Playback controls -->
-                        <template x-if="recorded">
-                            <div class="flex items-center gap-3 flex-wrap">
-                                <!-- Play/Pause -->
-                                <button @click="togglePlay()"
-                                        class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm border transition-all"
-                                        :class="playing
-                                            ? 'bg-brand text-white border-brand shadow-lg shadow-indigo-100'
-                                            : 'bg-white text-slate-700 border-slate-200 hover:border-brand hover:text-brand'">
-                                    <svg x-show="!playing" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z"/>
-                                    </svg>
-                                    <svg x-show="playing" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                                    </svg>
-                                    <span x-text="playing ? 'Pause' : 'Play'"></span>
-                                </button>
-
-                                <!-- Re-record -->
-                                <button @click="discard()"
-                                        class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-white text-red-500 border border-red-200 hover:bg-red-50 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                    </svg>
-                                    Re-record
-                                </button>
-
-                                <!-- Send -->
-                                <button @click="submitVoice()"
-                                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-brand text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                    </svg>
-                                    Send to Teacher
-                                </button>
-                            </div>
-                        </template>
-
                     </div>
                 </div>
 
-                <!-- ✅ Doughnut chart — right side -->
-                <div class="w-28 h-28 relative flex-shrink-0">
-                    <canvas id="englishChart"></canvas>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span class="font-bold text-lg text-slate-700">{{ approved }}</span>
-                        <span class="text-[10px] text-slate-400">courses</span>
+                <!-- Success toast -->
+                <div x-show="sent"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 -translate-y-1"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-end="opacity-0"
+                    class="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-xl border border-green-100 flex items-center gap-2">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Voice submitted successfully!
+                </div>
+
+                <!-- Homework selector -->
+                <div class="mb-4">
+                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Select Homework</label>
+                    <select x-model="selectedHomework"
+                            class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-100 text-sm text-slate-700 focus:ring-2 focus:ring-brand focus:outline-none">
+                        <option value="">-- Choose homework task --</option>
+                        {% for hw in homeworks %}
+                            <option value="{{ hw.id }}">{{ hw.title }} — {{ hw.course.course_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Timer bar -->
+                <div class="mb-5">
+                    <div class="flex justify-between text-xs mb-1.5">
+                        <span class="font-mono font-bold"
+                            :class="recording ? 'text-red-500' : 'text-slate-500'"
+                            x-text="timeDisplay">00:00</span>
+                        <span class="font-mono text-slate-400">02:00</span>
                     </div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                        <div class="h-2.5 rounded-full transition-all duration-1000"
+                            :class="recording ? 'bg-red-500' : recorded ? 'bg-brand' : 'bg-slate-300'"
+                            :style="`width: ${progress}%`">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div>
+
+                    <!-- Hold to Record -->
+                    <template x-if="!recorded">
+                        <button
+                            id="recordBtn"
+                            type="button"
+                            @mousedown.prevent="startRecording()"
+                            @mouseup.prevent="stopRecording()"
+                            @mouseleave="if(recording) stopRecording()"
+                            class="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-150 shadow-lg select-none touch-none"
+                            :class="recording
+                                ? 'bg-red-500 text-white shadow-red-200 scale-95'
+                                : 'bg-brand text-white shadow-indigo-200 hover:bg-indigo-700'">
+                            <span class="relative flex items-center justify-center w-5 h-5">
+                                <span x-show="recording"
+                                    class="absolute inset-0 rounded-full bg-red-300 animate-ping opacity-75"></span>
+                                <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                                </svg>
+                            </span>
+                            <span x-text="recording ? 'Recording... Release to stop' : 'Hold to Record'"></span>
+                        </button>
+                    </template>
+
+                    <!-- Playback controls -->
+                    <template x-if="recorded">
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+
+                            <!-- Play/Pause -->
+                            <button
+                                type="button"
+                                @click.prevent.stop="togglePlay()"
+                                class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm border transition-all touch-manipulation select-none"
+                                :class="playing
+                                    ? 'bg-brand text-white border-brand shadow-lg shadow-indigo-100'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:border-brand hover:text-brand'">
+                                <template x-if="!playing">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </template>
+                                <template x-if="playing">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                    </svg>
+                                </template>
+                                <span x-text="playing ? 'Pause' : 'Play Recording'"></span>
+                            </button>
+
+                            <!-- Re-record -->
+                            <button
+                                type="button"
+                                @click.prevent.stop="discard()"
+                                class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm bg-white text-red-500 border border-red-200 hover:bg-red-50 transition touch-manipulation select-none">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                Re-record
+                            </button>
+
+                            <!-- Send -->
+                            <button
+                                type="button"
+                                @click.prevent.stop="submitVoice()"
+                                class="flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm bg-brand text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition touch-manipulation select-none">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                </svg>
+                                Send to Teacher
+                            </button>
+                        </div>
+                    </template>
+
                 </div>
             </div>
 
-            <!-- ✅ Fixed blob — use style instead of Tailwind z-index utility -->
+            <!-- Blob background -->
             <div style="position:absolute; top:0; right:0; width:16rem; height:16rem;
                         background:#e6ecff; border-radius:9999px; filter:blur(64px);
                         transform:translate(2.5rem,-2.5rem); pointer-events:none; z-index:0;">
             </div>
         </div>
 
-        <!-- ✅ Homework Tasks — back in original position -->
+        <!-- Homework Tasks -->
         <div class="glass-card p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="font-bold text-slate-800">Homework</h3>
@@ -317,7 +345,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <h4 class="text-sm font-bold text-slate-800 group-hover:text-brand truncate">{{ hw.title }}</h4>
-                        <p class="text-xs text-slate-400">
+                        <p class="text-xs text-slate-400 truncate">
                             {{ hw.course.course_name }} •
                             {% if hw.due_date %}Due {{ hw.due_date|date:"d M" }}{% endif %}
                         </p>
