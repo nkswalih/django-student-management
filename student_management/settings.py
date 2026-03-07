@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
     'accounts',
     'school',
@@ -54,7 +55,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_tailwind',
     'cloudinary',
-    'cloudinary_storage',
 ]
 
 AUTH_USER_MODEL = 'accounts.Student'
@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'student_management.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
+        conn_max_age=0,
         ssl_require=True
     )
 }

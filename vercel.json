@@ -6,8 +6,8 @@
       "src": "student_management/wsgi.py",
       "use": "@vercel/python",
       "config": {
-        "runtime": "python3.12",
-        "maxDuration": 30
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.12"
       }
     },
     {
