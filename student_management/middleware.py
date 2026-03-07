@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+from django.core.cache import cache
 
 class RoleBasedRedirectMiddleware:
 
@@ -11,18 +12,31 @@ class RoleBasedRedirectMiddleware:
         if request.path.startswith('/admin'):
             return self.get_response(request)
 
-        if request.user.is_authenticated:
-
-            # If user visits login page after login
-            if request.path == '/accounts/login/':
-
-                if request.user.groups.filter(name='Student').exists():
-                    return redirect('student_dashboard')
-
-                elif request.user.groups.filter(name='Teacher').exists():
-                    return redirect('teacher_dashboard')
-
-                elif request.user.groups.filter(name='Principal').exists():
-                    return redirect('principal_dashboard')
+        # Only check on login page (no need to run on every page!)
+        if request.user.is_authenticated and request.path == '/accounts/login/':
+            
+            # Cache the user role
+            cache_key = f'user_role_{request.user.id}'
+            role = cache.get(cache_key)
+            
+            if role is None:
+                # Single query to get all groups at once
+                groups = list(request.user.groups.values_list('name', flat=True))
+                if 'Student' in groups:
+                    role = 'Student'
+                elif 'Teacher' in groups:
+                    role = 'Teacher'
+                elif 'Principal' in groups:
+                    role = 'Principal'
+                else:
+                    role = 'none'
+                cache.set(cache_key, role, 300)  # cache 5 minutes
+            
+            if role == 'Student':
+                return redirect('student_dashboard')
+            elif role == 'Teacher':
+                return redirect('teacher_dashboard')
+            elif role == 'Principal':
+                return redirect('principal_dashboard')
 
         return self.get_response(request)

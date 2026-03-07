@@ -57,6 +57,15 @@ INSTALLED_APPS = [
     'cloudinary',
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 300,
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 AUTH_USER_MODEL = 'accounts.Student'
 
 MIDDLEWARE = [
