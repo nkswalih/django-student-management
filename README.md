@@ -54,7 +54,7 @@ This system demonstrates real-world backend architecture, media handling (images
 - **Frontend:** Tailwind CSS
 - **Interactivity:** Alpine.js
 - **Charts:** Chart.js
-- **Database:** SQLite (can switch to PostgreSQL)
+- **Database:** PostgreSQL
 - **Media Handling:** Django Media Files
 - **Voice Recording:** Web MediaRecorder API
 
