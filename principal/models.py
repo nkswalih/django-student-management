@@ -4,12 +4,13 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class Course(models.Model):
     DEPARTMENT_CHOICES = [
-        ('CSE', 'Computer Science'),
-        ('ECE', 'Electronics'),
-        ('MECH', 'Mechanical'),
-        ('BBA', 'Business Administration'),
+        ("CSE", "Computer Science"),
+        ("ECE", "Electronics"),
+        ("MECH", "Mechanical"),
+        ("BBA", "Business Administration"),
     ]
 
     course_id = models.CharField(max_length=20, unique=True)
@@ -18,13 +19,20 @@ class Course(models.Model):
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to='principal/course_images/', blank=True, null=True)
-    is_active = models.BooleanField(default=True)
+    image = models.ImageField(
+        upload_to="principal/course_images/", blank=True, null=True
+    )
+    is_active = models.BooleanField(default=True, db_index=True)
+    department = models.CharField(
+        max_length=10, choices=DEPARTMENT_CHOICES, db_index=True
+    )
     teacher = models.ForeignKey(
-        User, on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='assigned_courses',
-        limit_choices_to={'groups__name': 'Teacher'}
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="assigned_courses",
+        limit_choices_to={"groups__name": "Teacher"},
     )
 
     def __str__(self):
@@ -33,14 +41,17 @@ class Course(models.Model):
 
 class Note(models.Model):
     """PDF notes uploaded by teacher for a course."""
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='notes')
+
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="notes")
     title = models.CharField(max_length=200)
-    pdf_file = models.FileField(upload_to='notes/pdfs/')
+    pdf_file = models.FileField(upload_to="notes/pdfs/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='uploaded_notes'
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="uploaded_notes",
     )
 
     def __str__(self):
@@ -49,45 +60,75 @@ class Note(models.Model):
 
 class Enrollment(models.Model):
     """Tracks which student purchased which course."""
+
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
     ]
 
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='enrollments')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name="enrollments", db_index=True
+    )
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="enrollments", db_index=True
+    )
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default="pending", db_index=True
+    )
     enrolled_at = models.DateTimeField(auto_now_add=True)
     progress = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ('student', 'course')
+        unique_together = ("student", "course")
+        indexes = [
+            models.Index(fields=["status", "enrolled_at"]),
+        ]
 
     def __str__(self):
         return f"{self.student.email} → {self.course.course_name} ({self.status})"
-    
+
+
 class Homework(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='homeworks')
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='homeworks')
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="homeworks", db_index=True
+    )
+    teacher = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="homeworks", db_index=True
+    )
     title = models.CharField(max_length=200)
     instructions = models.TextField()
-    due_date = models.DateField()
+    due_date = models.DateField(db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["due_date", "created_at"]),
+        ]
 
     def __str__(self):
         return f"{self.title} - {self.course.course_name}"
 
 
 class VoiceSubmission(models.Model):
-    homework = models.ForeignKey(Homework, on_delete=models.CASCADE, related_name='submissions')
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='voice_submissions')
-    audio_file = models.FileField(upload_to='voice_submissions/')
+    homework = models.ForeignKey(
+        Homework, on_delete=models.CASCADE, related_name="submissions", db_index=True
+    )
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name="voice_submissions",
+        db_index=True,
+    )
+    audio_file = models.FileField(upload_to="voice_submissions/")
     submitted_at = models.DateTimeField(auto_now_add=True)
-    is_reviewed = models.BooleanField(default=False)
+    is_reviewed = models.BooleanField(default=False, db_index=True)
 
     class Meta:
-        unique_together = ('homework', 'student')
+        unique_together = ("homework", "student")
+        indexes = [
+            models.Index(fields=["is_reviewed", "submitted_at"]),
+        ]
 
     def __str__(self):
         return f"{self.student.email} - {self.homework.title}"
